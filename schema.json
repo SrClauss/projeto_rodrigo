@@ -1,0 +1,123 @@
+{
+  "Clientes": [
+    {
+      "_id": "ObjectId()",
+      "nome": "Nome do Cliente",
+      "cpf_cnpj": "123.456.789-01",
+      "endereco": {
+        "rua": "Rua Exemplo",
+        "numero": "123",
+        "bairro": "Bairro Exemplo",
+        "cidade": "Cidade Exemplo",
+        "estado": "XX"
+      },
+      "telefone": "(11) 1234-5678",
+      "email": "cliente@email.com",
+      "data_criacao": "ISODate()"
+    }
+  ],
+  "Fornecedores": [
+    {
+      "_id": "ObjectId()",
+      "nome": "Nome do Fornecedor",
+      "cnpj": "12.345.678/0001-90",
+      "endereco": {
+        "rua": "Rua Exemplo",
+        "numero": "456",
+        "bairro": "Bairro Exemplo",
+        "cidade": "Cidade Exemplo",
+        "estado": "XX"
+      },
+      "telefone": "(11) 9876-5432",
+      "email": "fornecedor@email.com",
+      "data_criacao": "ISODate()"
+    }
+  ],
+  "Produtos": [
+    {
+      "_id": "ObjectId()",
+      "nome": "Nome do Produto",
+      "descricao": "Descrição detalhada do produto",
+      "categoria": "Categoria do produto",
+      "preco_custo": 10.50,
+      "preco_venda": 15.00,
+      "fornecedor_id": "ObjectId()",
+      "data_criacao": "ISODate()"
+    }
+  ],
+  "Lotes_de_Produtos": [
+    {
+      "_id": "ObjectId()",
+      "produto_id": "ObjectId()",
+      "quantidade": 50,
+      "data_validade": "ISODate(\"2024-01-10T00:00:00Z\")",
+      "data_recebimento": "ISODate()"
+    }
+  ],
+  "Pedidos": [
+    {
+      "_id": "ObjectId()",
+      "cliente_id": "ObjectId()",
+      "itens": [
+        {
+          "produto_id": "ObjectId()",
+          "quantidade": 2,
+          "preco_unitario": 15.00,
+          "lote_id": "ObjectId()"
+        }
+      ],
+      "valor_total": 30.00,
+      "status": "Pendente",
+      "data_criacao": "ISODate()",
+      "data_atualizacao": "ISODate()"
+    }
+  ],
+  "Entregas": [
+    {
+      "_id": "ObjectId()",
+      "pedido_id": "ObjectId()",
+      "endereco_entrega": {
+        "rua": "Rua Exemplo",
+        "numero": "123",
+        "bairro": "Bairro Exemplo",
+        "cidade": "Cidade Exemplo",
+        "estado": "XX"
+      },
+      "status": "Em trânsito",
+      "data_criacao": "ISODate()",
+      "data_atualizacao": "ISODate()"
+    }
+  ],
+  "Pagamentos": [
+    {
+      "_id": "ObjectId()",
+      "pedido_id": "ObjectId()",
+      "tipo_pagamento": "Cartão de Crédito",
+      "valor_pago": 30.00,
+      "status": "Aprovado",
+      "data_criacao": "ISODate()",
+      "data_atualizacao": "ISODate()"
+    }
+  ],
+  "Movimentacao_de_Estoque": [
+    {
+      "_id": "ObjectId()",
+      "lote_id": "ObjectId()",
+      "tipo": "Entrada",
+      "quantidade": 50,
+      "data_movimentacao": "ISODate()",
+      "referencia_id": "ObjectId()",
+      "referencia_tipo": "Pedido"
+    }
+  ],
+  "Usuarios": [
+    {
+      "_id": "ObjectId()",
+      "nome": "Nome do Usuário",
+      "email": "usuario@email.com",
+      "senha": "senha_criptografada",
+      "tipo": "admin",
+      "data_criacao": "ISODate()"
+    }
+  ]
+}
