@@ -1,14 +1,11 @@
-
 use crate::database::{Crudable, Privilege};
 use bcrypt;
 use bcrypt::DEFAULT_COST;
 use mongodb::bson::oid::ObjectId;
 use serde::{Serialize, Deserialize};
 use mongodb::bson::doc;
-use mongodb::Collection;
 use async_trait::async_trait;
-use mongodb::Database;
-use mongodb::bson::{self, Document};
+
 
 
 
@@ -53,36 +50,19 @@ impl Crudable for User {
     fn collection_name() -> &'static str {
         "users"
     }
-    async fn create(&self, db: Database, privilege: Privilege) -> Result<(), String> {
-        if (privilege as i8) < (Privilege::SuperUser as i8) {
-            return Err("Insufficient privilege".to_string());
-        }     
-        let collection: Collection<User> = db.collection("users");
-        collection.insert_one(self).await.map_err(|e| e.to_string())?;
-        Ok(())
+    fn id(&self) -> String {
+        self.id.as_ref().unwrap().to_hex()
     }
-    async fn read(id: &str, db: Database) -> Result<Self, String> {
-        
-        let collection: Collection<User> = db.collection("users");
-        collection.find_one(doc! {"_id": id}).await.map(|result| result.unwrap()).map_err(|e| e.to_string())
+    fn privilege_for_create() -> Privilege {
+        Privilege::SuperUser
     }
-    async fn update(&self, id: &str, db: Database, privilege: Privilege) -> Result<(), String> {
-        if (privilege as i8) < (Privilege::Admin as i8) {
-            return Err("Insufficient privilege".to_string());
-        }
-        let collection: Collection<User> = db.collection("users");
-        let user_doc: Document = bson::to_document(self).map_err(|e| e.to_string())?;
-        collection.update_one(doc! {"_id": id}, doc! {"$set": user_doc}).await.map_err(|e| e.to_string())?;
-        Ok(())
+    fn privilege_for_update() -> Privilege {
+        Privilege::SuperUser
     }
-    async fn delete(&self, db: Database, privilege: Privilege) -> Result<(), String> {
-
-        if (privilege as i8) < (Privilege::Admin as i8) {
-            return Err("Insufficient privilege".to_string());
-        }
-        let collection: Collection<User> = db.collection("users");
-        collection.delete_one(doc! {"_id": self.id.clone().unwrap()}).await.map_err(|e| e.to_string())?;
-        Ok(())
+    fn privilege_for_delete() -> Privilege {
+        Privilege::SuperUser
     }
+    
+    
 
 }

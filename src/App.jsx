@@ -1,20 +1,48 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/tauri";
-import "./App.css";
+import React from 'react';
+import { createTheme, ThemeProvider } from '@mui/material';
+import MainScreen from './screens/MainScreen/MainScreen';
+import LoginScreen from './screens/LoginScreen/LoginScreen';
+import AdminScreen from './screens/AdminScreen/AdminScreen';
+import { NavigationProvider, NavigationContext } from './NavigationContext';
 
-function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
-
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
-  }
+const App = () => {
+  const theme = createTheme({
+    palette: {
+      primary: { main: '#549b86' },
+      secondary: { main: '#045b1c' },
+    },
+    components: {
+      MuiInputBase: {
+        styleOverrides: {
+          root: { color: '#003000', borderRadius: '5px' },
+        },
+      },
+    },
+  });
 
   return (
-    <div>Dida</div>
-  )
-}
+    <ThemeProvider theme={theme}>
+      <NavigationProvider>
+        <ScreenRenderer />
+      </NavigationProvider>
+      
+    </ThemeProvider>
+  );
+};
+
+const ScreenRenderer = () => {
+  const { activeScreen } = React.useContext(NavigationContext);
+
+  switch (activeScreen) {
+    case 'LoginScreen':
+      return <LoginScreen />;
+    case 'MainScreen':
+      return <MainScreen />;
+    case 'AdminScreen':
+      return <AdminScreen />;
+    default:
+      return <LoginScreen />;
+  }
+};
 
 export default App;
