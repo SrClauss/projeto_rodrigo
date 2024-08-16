@@ -1,10 +1,11 @@
-import { AdminPanelSettingsSharp, Agriculture, ArrowBack, BackHandRounded, CalendarMonth, Category, ExitToAppSharp, InfoSharp, PersonAdd, PersonAddAlt, PersonAddAlt1TwoTone, SettingsSuggest, ShoppingBasket, Store, VerifiedUserSharp } from "@mui/icons-material";
+import { AdminPanelSettingsSharp, Agriculture, ArrowBack, BackHandRounded, CalendarMonth, Category, ExitToAppSharp, Fastfood, InfoSharp, PersonAdd, PersonAddAlt, PersonAddAlt1TwoTone, ProductionQuantityLimits, ProductionQuantityLimitsSharp, SettingsSuggest, ShoppingBasket, Spa, Store, VerifiedUserSharp } from "@mui/icons-material";
 import "../MainScreen/MainScreen.css";
 import Modal from "../../modals/Modal";
 import { useState } from "react";
 import CadastroCliente from "../../modals/CadastroCliente";
 import { NavigationContext } from "../../NavigationContext";
 import React from "react";
+import CadastroCategoria from "../../modals/CadastroCategoria";
 
 export default function AdminScreen({ privilege }) {
 
@@ -45,7 +46,7 @@ export default function AdminScreen({ privilege }) {
                         <button
                             onClick={() => {
                                 handleModal();
-                                setComponentModal(<CadastroCliente />);
+                                setComponentModal(<CadastroCategoria />);
                             }}
 
                         >
@@ -57,8 +58,8 @@ export default function AdminScreen({ privilege }) {
                             <div className="label-button">Cadastrar Usuário</div>
                         </button>
                         <button>
-                            <div><Store /></div>
-                            <div className="label-button">Pedidos</div>
+                            <div><Spa/></div>
+                            <div className="label-button">Cadastrar Produtos</div>
                         </button>
                         <button onClick={handleMainScreen}>
                             <div><ArrowBack /></div>

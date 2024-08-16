@@ -15,6 +15,9 @@
     height: 100%;
 
 }
+.content-mutable{
+    margin: 20px;
+}
 .right-menu{
     display: flex;
     flex-direction: column;
@@ -59,4 +62,9 @@
     margin: 20px;
 
     width: 90%;
+}
+.button-limpar{
+    display: flex;
+    width: 100%;
+    justify-content: end;
 }

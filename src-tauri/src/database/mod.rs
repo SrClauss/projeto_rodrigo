@@ -122,41 +122,6 @@ pub async fn find_first_by_param<T: Crudable>(
     }
 }
 
-pub async fn find_by_closure<T, F>(
-    db: &Database,
-    collection_name: &str,
-    mut closure: F,
-) -> Result<Vec<T>, String>
-where
-    T: DeserializeOwned + Send + Sync,
-    F: FnMut(&T) -> bool + Send + Sync,
-{
-    let collection: Collection<T> = db.collection(collection_name);
-
-    let mut cursor = collection
-        .find(doc! {})
-        .await
-        .map_err(|e| e.to_string())?;
-
-    let mut results = Vec::new();
-
-    while cursor.advance().await.map_err(|e| e.to_string())? {
-        let doc = cursor.deserialize_current();
-        match doc {
-            Ok(doc) => {
-                if closure(&doc) {
-                    results.push(doc);
-                }
-            }
-            Err(e) => {
-                println!("Erro ao deserializar documento : {}", e);
-                continue;
-            }
-        }
-    }
-
-    Ok(results)
-}
 pub async fn find_all<T: Crudable>(db: &Database) -> Result<Vec<T>, String> {
     let collection: Collection<T> = db.collection(T::collection_name());
     let mut cursor: mongodb::Cursor<T> = collection.find(doc! {}).await.map_err(|e| e.to_string())?;
@@ -172,6 +137,30 @@ pub async fn find_all<T: Crudable>(db: &Database) -> Result<Vec<T>, String> {
         }
     }
     Ok(results)
+}
+
+pub async fn element_what_contains<T: Crudable>(param: String, value: Bson, db: &Database) -> Result<Vec<T>, String> {
+    let collection: Collection<T> = db.collection(T::collection_name());
+    let filter = doc! {
+        param:{
+            "$regex": value, 
+            "$options": "i"
+        }
+    };
+    let mut cursor = collection.find(filter).await.map_err(|e| e.to_string())?;
+    let mut results = Vec::new();
+    while cursor.advance().await.map_err(|e| e.to_string())? {
+        let doc = cursor.deserialize_current();
+        match doc {
+            Ok(doc) => results.push(doc),
+            Err(e) => {
+                println!("Erro ao deserializar documento : {}", e);
+                continue;
+            }
+        }
+    }
+    Ok(results)
+
 }
 
 

@@ -1,0 +1,66 @@
+@import url("../../Var.css");
+.card-cliente{
+
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    border-radius: 10px;
+    border-color: var(--cor-secundaria);
+    border-width: 1px;
+    border-style: solid;
+    box-shadow: 2px 2px 5px var(--cor-terciaria);
+    color: var(--cor-quaternaria);
+    
+}
+
+.card-cliente-icon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20%;
+}
+.card-cliente-info{
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    margin-left: 10px;
+    width: 60%;
+    row-gap: 10px;
+}
+
+.first-line{
+   font-size: x-small;
+   color: rgb(173, 197, 173);
+   
+}
+.second-line{
+    font-size: x-large;
+    color: var(--cor-quaternaria);
+    text-align: center;
+    width: 100%;
+}
+
+.third-line{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    font-size: small;
+    color: var(--cor-secundaria);
+    text-align: center;
+    width: 100%;
+    gap: 10px;
+}
+.card-cliente-actions{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 20%;
+} 
+
+@media (max-width: 750px) {
+    .card-cliente-actions {
+        flex-direction: column;
+    }
+} 

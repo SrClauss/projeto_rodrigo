@@ -8,7 +8,7 @@ import { invoke } from "@tauri-apps/api"
 
 
 export default function CadastroCliente({ onSetComponentModal, initialData = {} }) {
-    const [data, setData] = useState(initialData)
+    const [data, setData] = useState({ ...initialData, enderecos: initialData.enderecos || [] })
 
 
 
@@ -17,13 +17,14 @@ export default function CadastroCliente({ onSetComponentModal, initialData = {} 
 
 
     const handleSaveData = (data) => {
-        console.log(data)
+
         invoke("create_a_cliente", { data: data }).then((res) => {
             console.log(res)
 
         }).catch((err) => {
             console.log(err)
         })
+        onSetComponentModal(false);
 
 
 
@@ -92,7 +93,7 @@ export default function CadastroCliente({ onSetComponentModal, initialData = {} 
                                     onChange={(e) => setData({ ...data, data_nascimento: e.target.value })}
                                 />
                             </div>
-                            <AdressCard adresses={data.enderecos||[]} onAddAdress={(_) => setShowAdress(!showAdress)} onDeleteAdress={
+                            <AdressCard adresses={data.enderecos} onAddAdress={(_) => setShowAdress(!showAdress)} onDeleteAdress={
                                 (index) => {
                                     const newEnderecos = data.enderecos.filter((_, i) => i !== index)
                                     setData({ ...data, enderecos: newEnderecos })

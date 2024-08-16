@@ -48,9 +48,7 @@ export default function CadastroEnderecos({ onSubmitEndereco, initialData = {} }
 
 
 
-    useEffect(() => {
-        console.log(data);
-    }, [data]);
+
 
     return (
         <form className="form-cad" onSubmit={handleSubmit}>

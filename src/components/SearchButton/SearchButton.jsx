@@ -3,9 +3,10 @@ import { useState } from 'react';
 import Person2 from '@mui/icons-material/Person2';
 import SearchIcon from '@mui/icons-material/Search';
 
-export default function SearchButton({ onSubmitSearch }) {
+export default function SearchButton({ onSubmitSearch, onSetCategory }) {
 
   const [criterio, setCriterio] = useState("Cliente");
+  const [search, setSearch] = useState("");
 
   return (
     <Paper
@@ -19,8 +20,10 @@ export default function SearchButton({ onSubmitSearch }) {
         sx={{ ml: 1, flex: 1 }}
         placeholder={`Pesquisar por ${criterio}`}
         inputProps={{ 'aria-label': 'search google maps' }}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
       />
-      <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+      <IconButton onClick={()=>onSubmitSearch(search)} type="button" sx={{ p: '10px' }} aria-label="search">
         <SearchIcon />
       </IconButton>
       <FormControl>
@@ -30,12 +33,12 @@ export default function SearchButton({ onSubmitSearch }) {
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={criterio}
-          onChange={(e) => setCriterio(e.target.value)} // Corrigido para onChange
+          onChange={(e) => {setCriterio(e.target.value)
+                            onSetCategory(e.target.value)
+          }}
         >
           <MenuItem value={"Cliente"}>Cliente</MenuItem>
-          <MenuItem value={"Usuario"}>Usuario</MenuItem>
           <MenuItem value={"Fornecedor"}>Fornecedor</MenuItem>
-          <MenuItem value={"Produto"}>Produto</MenuItem>
         </Select>
       </FormControl>
     </Paper>

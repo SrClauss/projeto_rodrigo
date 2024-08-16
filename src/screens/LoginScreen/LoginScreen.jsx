@@ -9,10 +9,7 @@ export default function LoginScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const { setActiveScreen} = React.useContext(NavigationContext);
-    useEffect(() => {
-        console.log(`Email: ${email} Password: ${password}`);
-
-    }, [email, password]);
+  
     const handleLogin = () => {
        
         invoke("login", { data:{email: email, password: password} }).then((res) => {

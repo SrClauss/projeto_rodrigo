@@ -17,12 +17,12 @@ pub struct Categoria{
 
 impl Categoria {
     pub fn new(
-        id: ObjectId,
+
         nome: String,
         descricao: String,
     ) -> Result<Self, String> {
         Ok(Categoria {
-            id,
+            id: ObjectId::new(),
             nome,
             descricao,
         })

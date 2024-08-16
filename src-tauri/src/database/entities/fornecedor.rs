@@ -1,9 +1,10 @@
 use crate::database::Crudable;
-use crate::utilities::validar_cnpj;
 use async_trait::async_trait;
 use mongodb::bson::oid::ObjectId;
 use mongodb::bson::doc;
 use serde::{Deserialize, Serialize};
+
+use super::endereco::Endereco;
 
 
 
@@ -13,8 +14,8 @@ pub struct Fornecedor {
     #[serde(rename = "_id")]
     pub id: ObjectId,
     pub nome: String,
-    pub cnpj: String,
-    pub endereco: ObjectId,
+    pub cpf_cnpj: String,
+    pub enderecos: Vec<Endereco>,
     pub telefone: String,
     pub email: String,
     pub data_criacao: String,
@@ -22,22 +23,20 @@ pub struct Fornecedor {
 
 impl Fornecedor {
     pub fn new(
-        id: ObjectId,
+
         nome: String,
-        cnpj: String,
-        endereco: ObjectId,
+        cpf_cnpj: String,
+        enderecos: Vec<Endereco>,
         telefone: String,
         email: String,
         data_criacao: String,
     ) -> Result<Self, String> {
-        if validar_cnpj(&cnpj) {
-            return Err("CNPJ inválido".to_string());
-        }
+        
         Ok(Fornecedor {
-            id,
+            id:ObjectId::new(),
             nome,
-            cnpj,
-            endereco,
+            cpf_cnpj,
+            enderecos,
             telefone,
             email,
             data_criacao,
