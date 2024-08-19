@@ -1,12 +1,8 @@
-use crate::database::traits::crudable::Crudable;
 pub mod entities;
 pub mod traits;
 use dotenv::dotenv;
-use mongodb::bson::{doc, Bson};
 use mongodb::options::ClientOptions;
-use mongodb::Collection;
 use mongodb::{Client, Database};
-
 use std::env;
 
 pub async fn connect() -> Database {
