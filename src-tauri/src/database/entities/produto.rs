@@ -1,8 +1,8 @@
-use crate::database::{find_all_by_param, Crudable};
+use crate::database::traits::crudable::Crudable;
 use crate::database::entities::item_produto::ItemProduto;
 use async_trait::async_trait;
 use mongodb::bson::oid::ObjectId;
-use mongodb::{ bson::doc, Database};
+use mongodb::bson::doc;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -12,41 +12,36 @@ pub struct Produto {
     pub id: ObjectId,
     pub nome: String,
     pub descricao: String,
-    pub categoria_id: Option<ObjectId>,
+    pub categoria_id: ObjectId,
+    pub itens: Vec<ItemProduto>,
+
 }
 
 impl Produto {
     pub fn new(
-        id: ObjectId,
+
         nome: String,
         descricao: String,
         categoria_id: ObjectId,
+        itens: Option<Vec<ItemProduto>>,
     ) -> Result<Self, String> {
         Ok(Produto {
-            id,
+            id: ObjectId::new(),
             nome,
             descricao,
-            categoria_id: Option::Some(categoria_id),
+            categoria_id,
+            itens: itens.unwrap_or(vec![]),
         })
     }
-    pub async fn get_estoque(&self, db: &Database) -> Result<i32, String> {
-        let result = find_all_by_param::<ItemProduto>("produto_id", self.id.to_hex().as_str().into(), db)
-            .await;
-
-
-        match result {
-            Err(e) => return Err(e),
-            Ok(result) => {
-                let mut total = 0;
-                for item in result {
-                    total += item.quantidade;
-                }
-                Ok(total)
-            }
-            
-        }
-  
+ 
+   pub async fn add_item(&mut self, item: ItemProduto) {
+        self.itens.push(item);
+        
     }
+    pub fn produtos_ids(&self) -> Vec<ObjectId> {
+        self.itens.iter().map(|item| item.id).collect()
+    }
+
    
 }
 

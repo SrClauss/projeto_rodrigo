@@ -1,15 +1,14 @@
-use crate::database::Crudable;
-use async_trait::async_trait;
 use mongodb::bson::oid::ObjectId;
 use mongodb::bson::DateTime;
 use mongodb::bson::doc;
 use serde::{Deserialize, Serialize};
+use crate::database::entities::produto::Produto;
+use crate::database::traits::crudable::Crudable;
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone )]
 pub struct ItemProduto {
     #[serde(rename = "_id")]
     pub id: ObjectId,
-    pub produto_id: ObjectId,
     pub fornecedor_id: ObjectId,
     pub quantidade: i32,
     pub preco_compra: f64,
@@ -22,7 +21,7 @@ pub struct ItemProduto {
 
 impl ItemProduto {
     pub fn new(
-        id: ObjectId,
+
         produto_id: ObjectId,
         fornecedor_id: ObjectId,
         quantidade: i32,
@@ -33,8 +32,7 @@ impl ItemProduto {
         data_validade: DateTime,
     ) -> Self {
         ItemProduto {
-            id,
-            produto_id,
+            id: ObjectId::new(),    
             fornecedor_id,
             quantidade,
             preco_compra,
@@ -44,15 +42,12 @@ impl ItemProduto {
             data_validade,
         }
     }
+
+    pub async fn produto_id(&self) -> ObjectId {
+        let produto = Produto::find_element_by_child_id("itens", self.id).await.unwrap();
+        produto.id
+        
+    }
+    
 }
    
-#[async_trait]
-impl Crudable for ItemProduto {
-    fn collection_name() -> &'static str {
-        "itens_produtos"
-    }
-    fn id(&self) -> String {
-        self.id.to_hex()
-    }
-
-}

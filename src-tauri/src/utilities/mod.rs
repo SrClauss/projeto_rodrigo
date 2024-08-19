@@ -1,6 +1,24 @@
 
 
 use regex::Regex;
+use chrono::NaiveDate;
+use mongodb::bson::DateTime;
+
+
+
+pub fn bson_date_equal(data1: DateTime, data2: DateTime) -> bool {
+    let data1 = NaiveDate::parse_from_str(&data1.to_string()[0..10], "%Y-%m-%d").unwrap();
+    let data2 = NaiveDate::parse_from_str(&data2.to_string()[0..10], "%Y-%m-%d").unwrap();
+    data1 == data2
+}
+
+pub fn bson_to_naive(data: DateTime) -> NaiveDate {
+    NaiveDate::parse_from_str(&data.to_string()[0..10], "%Y-%m-%d").unwrap()
+}
+
+pub fn naive_to_bson(data: NaiveDate) -> DateTime {
+    DateTime::parse_rfc3339_str(str::replace(&data.to_string(), " ", "T").as_str()).unwrap()
+}
 pub fn validar_cep(cep: &str) -> bool {
     cep.len() == 8
 }

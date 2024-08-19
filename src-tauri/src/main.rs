@@ -2,22 +2,24 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 pub mod database;
 pub mod utilities;
-use database::{
-    entities::{cliente::Cliente, endereco::Endereco, fornecedor::Fornecedor, user::User, categoria::Categoria},
-    Crudable, Privilege
-};
-use mongodb::bson::{doc,  Bson};
+use database::entities::cliente::Cliente;
+use database::entities::endereco::Endereco;
+use database::entities::fornecedor::Fornecedor;
+use database::entities::user::User;
+use database::entities::categoria::Categoria;
+use database::entities::produto::Produto;
+use database::traits::crudable::{Crudable, Privilege};
+use mongodb::bson::{doc, oid::ObjectId, Bson};
 use serde_json::Value;
 use tauri::async_runtime::block_on;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
 async fn create_a_admin_if_dont_exists() -> Result<String, String> {
-    let db = database::connect().await;
-    let user = database::find_first_by_param::<User>(
+
+    let user = User::find_first_by_param(
         "privilege",
         Bson::Int32(Privilege::Admin as i32),
-        &db,
     )
     .await;
 
@@ -34,7 +36,7 @@ async fn create_a_admin_if_dont_exists() -> Result<String, String> {
         Privilege::Admin as i8,
     );
 
-    let user = user.create(&db, Privilege::Admin).await;
+    let user = user.create(Privilege::Admin).await;
 
     if user.is_err() {
         return Err(user.err().unwrap());
@@ -46,7 +48,7 @@ async fn create_a_admin_if_dont_exists() -> Result<String, String> {
 
 #[tauri::command]
 async fn create_a_cliente(data: Value) -> Result<Cliente, String> {
-    let db = database::connect().await;
+
     let enderecos_values = data.get("enderecos");
     if enderecos_values.is_none() {
         return Err("Endereços não informados".to_string());
@@ -94,7 +96,7 @@ async fn create_a_cliente(data: Value) -> Result<Cliente, String> {
         return Err(cliente.err().unwrap());
     }
     let cliente = cliente.unwrap();
-    let cliente = cliente.create(&db, Privilege::Admin).await;
+    let cliente = cliente.create(Privilege::Admin).await;
     if cliente.is_err() {
         return Err(cliente.err().unwrap());
     }
@@ -102,12 +104,12 @@ async fn create_a_cliente(data: Value) -> Result<Cliente, String> {
 }
 #[tauri::command]
 async fn login(data: Value) -> Result<String, String> {
-    let db = database::connect().await;
+
 
     let email = data["email"].as_str().unwrap_or("").to_string();
     let password = data["password"].as_str().unwrap_or("").to_string();
 
-    let user = database::find_first_by_param::<User>("email", Bson::String(email), &db).await;
+    let user = User::find_first_by_param("email", Bson::String(email)).await;
     if user.is_err() {
         return Err(user.err().unwrap());
     }
@@ -126,7 +128,7 @@ async fn login(data: Value) -> Result<String, String> {
 #[tauri::command]
 async fn create_a_fornecedor(data: Value) -> Result<String, String> {
     
-    let db = database::connect().await;
+
     let enderecos_values = data.get("enderecos");
     if enderecos_values.is_none() {
         return Err("Endereços não informados".to_string());
@@ -175,7 +177,7 @@ async fn create_a_fornecedor(data: Value) -> Result<String, String> {
     }
     let fornecedor = fornecedor.unwrap();
 
-    let fornecedor = fornecedor.create(&db, Privilege::Admin).await;
+    let fornecedor = fornecedor.create(Privilege::Admin).await;
     if fornecedor.is_err() {
         return Err(fornecedor.err().unwrap());
     }
@@ -186,10 +188,9 @@ async fn create_a_fornecedor(data: Value) -> Result<String, String> {
 
     
 }
-
 #[tauri::command]
-async fn create_a_category(data: Value) -> Result<String, String>{
-    let db = database::connect().await;
+async fn create_a_categoria(data: Value) -> Result<String, String>{
+
     let category = Categoria::new(
         data["nome"].as_str().unwrap_or("").to_string(),
         data["descricao"].as_str().unwrap_or("").to_string(),
@@ -198,17 +199,55 @@ async fn create_a_category(data: Value) -> Result<String, String>{
         return Err(category.err().unwrap());
     }
     let category = category.unwrap();
-    let category = category.create(&db, Privilege::Admin).await;
+    let category = category.create( Privilege::Admin).await;
     if category.is_err() {
         return Err(category.err().unwrap());
     }
     Ok("Categoria criada com sucesso".to_string())
 }
+#[tauri::command]
+async fn create_a_produto(data: Value) -> Result<String, String> {
+
+    let name = data["nome"].as_str();
+    let description = data["descricao"].as_str();
+    let categoria = data["categoria_id"].as_str();
+    if name.is_none() || description.is_none() || categoria.is_none() {
+        return Err("Nome, descrição ou categoria não informados".to_string());
+    }
+    
+    
+    let name = name.unwrap();
+    let description = description.unwrap();
+    let categoria = categoria.unwrap();
+
+    let categoria = ObjectId::parse_str(categoria);
+    if categoria.is_err() {
+        return Err("Id da categoria inválido".to_string());
+    }
+    let categoria = categoria.unwrap();
+    let produto = Produto::new(
+        name.to_string(),
+        description.to_string(),
+        categoria,
+        None,
+    );
+    if produto.is_err() {
+        return Err(produto.err().unwrap());
+    }
+    let produto = produto.unwrap();
+    let produto = produto.create(Privilege::Admin).await;
+    if produto.is_err() {
+        return Err(produto.err().unwrap());
+    }
+    Ok("Produto criado com sucesso".to_string())
+
+    
+}
 
 #[tauri::command]
 async fn find_cliente_by_substring_name(name_substring: String) -> Result<Vec<Cliente>, String> {
-    let db = database::connect().await;
-    let clientes = database::element_what_contains::<Cliente>("nome".to_string(), Bson::String(name_substring), &db).await;
+
+    let clientes = Cliente::element_what_contains("nome".to_string(), Bson::String(name_substring)).await;
     if clientes.is_err() {
         return Err(clientes.err().unwrap());
     }
@@ -216,13 +255,15 @@ async fn find_cliente_by_substring_name(name_substring: String) -> Result<Vec<Cl
 }
 #[tauri::command]
 async fn find_fornecedor_by_substring_name(name_substring: String) -> Result<Vec<Fornecedor>, String> {
-    let db = database::connect().await;
-    let fornecedores = database::element_what_contains::<Fornecedor>("nome".to_string(), Bson::String(name_substring), &db).await;
+
+    let fornecedores = Fornecedor::element_what_contains("nome".to_string(), Bson::String(name_substring)).await;
     if fornecedores.is_err() {
         return Err(fornecedores.err().unwrap());
     }
     Ok(fornecedores.unwrap())
 }
+
+
 fn main() {
     block_on(async {
         let result = create_a_admin_if_dont_exists().await;
@@ -236,7 +277,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             create_a_cliente,
             create_a_fornecedor,
-            create_a_category,  
+            create_a_categoria,
+            create_a_produto,  
             login,
             find_cliente_by_substring_name,
             find_fornecedor_by_substring_name,  

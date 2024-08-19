@@ -1,10 +1,10 @@
-use crate::database::{Crudable,find_all_by_param};
-use crate::database::entities::item_pedido::ItemPedido;
+use crate::database::traits::crudable::Crudable;
 use async_trait::async_trait;
 use mongodb::bson::oid::ObjectId;
 use mongodb::bson::DateTime;
-use mongodb::{bson::doc, Database};
 use serde::{Deserialize, Serialize};
+
+use super::item_pedido::ItemPedido;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Pedido{
@@ -14,6 +14,8 @@ pub struct Pedido{
     pub cliente_id: ObjectId,
     pub data: DateTime,
     pub status: StatusPedido,
+    pub itens: Vec<ItemPedido>,
+    
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -26,27 +28,22 @@ pub enum StatusPedido {
 
 impl Pedido {
     pub fn new(
-        id: ObjectId,
+   
         cliente_id: ObjectId,
         data: DateTime,
         status: StatusPedido,
+        itens: Option<Vec<ItemPedido>>
     ) -> Self {
         Pedido {
-            id,
+            id : ObjectId::new(),
             cliente_id,
             data,
             status,
+            itens: itens.unwrap_or(vec![]),
         }
     }
 
-    pub async fn total(&self, db: &Database) -> Result<f64, String> {
-        let itens = find_all_by_param::<ItemPedido>("pedido_id", (&self.id.to_hex()).into(), db).await?;
-        let mut total = 0.0;
-        for item in itens {
-            total += item.total(db).await?;
-        }
-        Ok(total)
-    }
+   
 }
 
 
@@ -60,6 +57,8 @@ impl Crudable for Pedido{
     fn id(&self) -> String {
         self.id.to_hex()
     }
+   
 
+  
 
 }

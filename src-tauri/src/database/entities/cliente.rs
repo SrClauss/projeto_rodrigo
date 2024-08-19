@@ -1,4 +1,5 @@
-use crate::database::{Crudable, entities::endereco::Endereco};
+use crate::database::traits::crudable::Crudable;
+use crate::database::entities::endereco::Endereco;
 use crate::utilities::validar_cpf_cnpj;
 use async_trait::async_trait;
 use mongodb::bson::oid::ObjectId;

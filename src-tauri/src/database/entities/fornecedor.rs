@@ -1,10 +1,9 @@
-use crate::database::Crudable;
+use crate::database::entities::endereco::Endereco;
+use crate::database::traits::crudable::Crudable;
 use async_trait::async_trait;
 use mongodb::bson::oid::ObjectId;
 use mongodb::bson::doc;
 use serde::{Deserialize, Serialize};
-
-use super::endereco::Endereco;
 
 
 

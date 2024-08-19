@@ -1,8 +1,7 @@
-use crate::database::{Crudable, Privilege};
+use crate::database::traits::crudable::Crudable;
 use async_trait::async_trait;
 use mongodb::bson::oid::ObjectId;
 use mongodb::bson::DateTime;
-use mongodb::{ bson::doc, Database};
 use serde::{Deserialize, Serialize};
 
 
@@ -43,19 +42,5 @@ impl Crudable for Entrega {
         self.id.unwrap().to_hex()
     }
 
-    async fn create(self, db: &Database, privilege: Privilege) -> Result<Entrega, String> {
-        Crudable::create(self, db, privilege).await
-    }
 
-    async fn read(id: &str, db: &Database) -> Result<Entrega, String> {
-        Crudable::read(id, db).await
-    }
-
-    async fn update(self, id: &str, db: &Database, privilege: Privilege) -> Result<Entrega, String> {
-        Crudable::update(self, id, db, privilege).await
-    }
-
-    async fn delete(self, db: &Database, privilege: Privilege) -> Result<Entrega, String> {
-        Crudable::delete(self, db, privilege).await
-    }
 }

@@ -1,4 +1,5 @@
-use crate::database::{Crudable, Privilege};
+use crate::database::traits::crudable::{Crudable, Privilege};
+
 use bcrypt;
 use bcrypt::DEFAULT_COST;
 use mongodb::bson::oid::ObjectId;

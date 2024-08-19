@@ -1,4 +1,4 @@
-use crate::database::Crudable;
+use crate::database::traits::crudable::Crudable;
 use async_trait::async_trait;
 use mongodb::bson::oid::ObjectId;
 use mongodb::bson::doc;
