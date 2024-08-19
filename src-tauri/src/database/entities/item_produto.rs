@@ -22,7 +22,7 @@ pub struct ItemProduto {
 impl ItemProduto {
     pub fn new(
 
-        produto_id: ObjectId,
+       
         fornecedor_id: ObjectId,
         quantidade: i32,
         preco_compra: f64,

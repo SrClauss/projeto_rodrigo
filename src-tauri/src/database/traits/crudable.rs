@@ -1,10 +1,12 @@
 use crate::database::connect;
+use async_trait::async_trait;
 use mongodb::bson::oid::ObjectId;
-use mongodb::bson::{self,doc, Bson};
-
+use mongodb::bson::{doc, Bson};
 use mongodb::Collection;
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::Value;
+
+#[async_trait]
 pub trait Crudable: Send + Sync + DeserializeOwned + Serialize + Clone {
     async fn collection() -> Collection<Self> {
         let db = connect().await;

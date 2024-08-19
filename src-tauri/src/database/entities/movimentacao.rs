@@ -52,12 +52,18 @@ impl Movimentacao {
 
         item.quantidade += quantidade;
 
-        produto.update(Privilege::Admin).await;
+        let upd = produto.update(Privilege::Admin).await;
+        if upd.is_err() {
+            return Err("Erro ao incrementar quantidade".to_string());
+        }
         self.log = format!(
             "Incremento de {} unidades do produto {}",
             quantidade, produto.nome
         );
-        self.update(Privilege::Admin).await;
+        let upd = self.update(Privilege::Admin).await;
+        if upd.is_err() {
+            return Err("Erro ao incrementar quantidade".to_string());
+        }
         Ok(())
     }
 
@@ -68,9 +74,16 @@ impl Movimentacao {
         }
         let mut produto = produto.unwrap();
         produto.itens.push(item_produto);
-        produto.update(Privilege::Admin).await;
+        let upd = produto.update(Privilege::Admin).await;
+        if upd.is_err() {
+            return Err("Erro ao adicionar novo item".to_string());
+        }
+
         self.log = format!("Adicionado novo item ao produto {}", produto.nome);
-        self.update(Privilege::Admin).await;
+        let upt = self.update(Privilege::Admin).await;
+        if upt.is_err() {
+            return Err("Erro ao adicionar novo item".to_string());
+        }
         Ok(())
     }
     pub async fn saida_estoque(
