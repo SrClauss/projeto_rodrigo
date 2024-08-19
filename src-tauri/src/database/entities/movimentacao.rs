@@ -117,7 +117,10 @@ impl Movimentacao {
             item.quantidade -= quantidade;
         }
 
-        produto.update(Privilege::Admin).await;
+        let upd = produto.update(Privilege::Admin).await;
+        if upd.is_err() {
+            return Err("Erro ao decrementar quantidade".to_string());
+        }
 
         movimentacao.log = format!(
             "Saida de {} unidades do produto {}",
