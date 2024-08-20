@@ -1,12 +1,12 @@
 
 
 use regex::Regex;
-use chrono::NaiveDate;
+use chrono::{Datelike, NaiveDate};
 use mongodb::bson::DateTime;
 
 
 
-pub fn bson_date_equal(data1: DateTime, data2: DateTime) -> bool {
+pub fn bson_date_equal(data1: &DateTime, data2: &DateTime) -> bool {
     let data1 = NaiveDate::parse_from_str(&data1.to_string()[0..10], "%Y-%m-%d").unwrap();
     let data2 = NaiveDate::parse_from_str(&data2.to_string()[0..10], "%Y-%m-%d").unwrap();
     data1 == data2
@@ -63,4 +63,9 @@ pub fn validar_cnpj(cnpj: &str) -> bool {
 
     dv1 == nums[12] && dv2 == nums[13]
 
+}
+
+
+pub fn naive_to_ymd(data: NaiveDate) -> NaiveDate {
+    NaiveDate::from_ymd_opt(data.year(), data.month0(), data.day0()).unwrap()
 }

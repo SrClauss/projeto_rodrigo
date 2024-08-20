@@ -64,3 +64,7 @@
     column-gap: 20px;
 }
 
+.buttons-div{
+    display: flex;
+    margin-top: 30px;
+}

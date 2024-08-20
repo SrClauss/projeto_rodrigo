@@ -6,10 +6,11 @@ import CadastroCliente from "../../modals/CadastroCliente";
 import { NavigationContext } from "../../NavigationContext";
 import React from "react";
 import CadastroCategoria from "../../modals/CadastroCategoria";
+import CadastroProdutos from "../../modals/CadastroProdutos";
 
 export default function AdminScreen({ privilege }) {
 
-    const {setActiveScreen} = React.useContext(NavigationContext);
+    const { setActiveScreen } = React.useContext(NavigationContext);
     const [showModal, setShowModal] = useState(false);
     const [componentModal, setComponentModal] = useState(null);
 
@@ -19,7 +20,7 @@ export default function AdminScreen({ privilege }) {
 
 
 
-        
+
     }
     const handleMainScreen = () => {
 
@@ -32,17 +33,8 @@ export default function AdminScreen({ privilege }) {
         <>
             <div>
                 <div className="main-screen">
-                    <div className="content">
-
-                        <div className="barra-pesquisa">
-                 
-       
-
-                        </div>
-                    </div>
-                    <Modal show={showModal} onClose={() => setShowModal(false)} component={componentModal} />
-                    <div className="right-menu">
-                 
+                        
+                    <div className="left-menu">
                         <button
                             onClick={() => {
                                 handleModal();
@@ -57,8 +49,13 @@ export default function AdminScreen({ privilege }) {
                             <div><PersonAddAlt1TwoTone /></div>
                             <div className="label-button">Cadastrar Usuário</div>
                         </button>
-                        <button>
-                            <div><Spa/></div>
+                        <button
+                            onClick={() => {
+                                handleModal();
+                                setComponentModal(<CadastroProdutos />);
+                            }}
+                        >
+                            <div><Spa /></div>
                             <div className="label-button">Cadastrar Produtos</div>
                         </button>
                         <button onClick={handleMainScreen}>
@@ -66,7 +63,19 @@ export default function AdminScreen({ privilege }) {
                             <div className="label-button">Voltar</div>
                         </button>
 
+
                     </div>
+                    <Modal show={showModal} onClose={() => setShowModal(false)} component={componentModal} />
+                    <div className="content">
+
+                        <div className="barra-pesquisa">
+
+
+
+                        </div>
+                    </div>
+
+
                 </div>
 
 

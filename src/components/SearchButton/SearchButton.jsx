@@ -14,9 +14,10 @@ export default function SearchButton({ onSubmitSearch, onSetCategory }) {
       sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: "auto" }}
     >
       <IconButton sx={{ p: '10px' }} aria-label="menu">
-        <Person2 />
+        <Person2 color='primary' />
       </IconButton>
       <InputBase
+        color='primary'
         sx={{ ml: 1, flex: 1 }}
         placeholder={`Pesquisar por ${criterio}`}
         inputProps={{ 'aria-label': 'search google maps' }}
@@ -24,7 +25,7 @@ export default function SearchButton({ onSubmitSearch, onSetCategory }) {
         onChange={(e) => setSearch(e.target.value)}
       />
       <IconButton onClick={()=>onSubmitSearch(search)} type="button" sx={{ p: '10px' }} aria-label="search">
-        <SearchIcon />
+        <SearchIcon  color='primary'/>
       </IconButton>
       <FormControl>
         <Select

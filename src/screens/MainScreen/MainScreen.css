@@ -18,19 +18,21 @@
 .content-mutable{
     margin: 20px;
 }
-.right-menu{
+.left-menu{
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 120px;
+    width: 150px;
     height: 100%;
     background-color: var(--cor-primaria);
     row-gap: 10px;
     overflow-y: auto;
     overflow-x: hidden;
+    border-top-right-radius: 75px;
+    margin-top: 180px;
 }
-.right-menu button{
+.left-menu button{
     
     background-color: var(--cor-secundaria);
     height: 70px;
@@ -45,11 +47,11 @@
     box-shadow: 2px 2px 2px rgba(0, 0, 0);
 
 }
-.right-menu button:hover{
+.left-menu button:hover{
     background-color: var(--cor-secundaria-hover);
     margin-left: 5px;
 }
-.right-menu button:active{
+.left-menu button:active{
     background-color: var(--cor-secundaria-hover);
     box-shadow: none;
 }

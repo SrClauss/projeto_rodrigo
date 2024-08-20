@@ -45,7 +45,6 @@ async fn create_a_admin_if_dont_exists() -> Result<String, String> {
 
     return Ok(format!("Admin with id {:?} created", user.id));
 }
-
 #[tauri::command]
 async fn create_a_cliente(data: Value) -> Result<Cliente, String> {
 
@@ -209,17 +208,14 @@ async fn create_a_categoria(data: Value) -> Result<String, String>{
 async fn create_a_produto(data: Value) -> Result<String, String> {
 
     let name = data["nome"].as_str();
-    let description = data["descricao"].as_str();
     let categoria = data["categoria_id"].as_str();
-    if name.is_none() || description.is_none() || categoria.is_none() {
-        return Err("Nome, descrição ou categoria não informados".to_string());
+    if name.is_none() || categoria.is_none() {
+        return Err("Nomeou categoria não informados".to_string());
     }
     
     
     let name = name.unwrap();
-    let description = description.unwrap();
     let categoria = categoria.unwrap();
-
     let categoria = ObjectId::parse_str(categoria);
     if categoria.is_err() {
         return Err("Id da categoria inválido".to_string());
@@ -227,7 +223,6 @@ async fn create_a_produto(data: Value) -> Result<String, String> {
     let categoria = categoria.unwrap();
     let produto = Produto::new(
         name.to_string(),
-        description.to_string(),
         categoria,
         None,
     );
@@ -243,7 +238,6 @@ async fn create_a_produto(data: Value) -> Result<String, String> {
 
     
 }
-
 #[tauri::command]
 async fn find_cliente_by_substring_name(name_substring: String) -> Result<Vec<Cliente>, String> {
 
@@ -262,8 +256,14 @@ async fn find_fornecedor_by_substring_name(name_substring: String) -> Result<Vec
     }
     Ok(fornecedores.unwrap())
 }
-
-
+#[tauri::command]
+async fn get_categorias() -> Result<Vec<Categoria>, String> {
+    let categorias = Categoria::find_all().await;
+    if categorias.is_err() {
+        return Err(categorias.err().unwrap());
+    }
+    Ok(categorias.unwrap())
+}
 fn main() {
     block_on(async {
         let result = create_a_admin_if_dont_exists().await;
@@ -281,7 +281,8 @@ fn main() {
             create_a_produto,  
             login,
             find_cliente_by_substring_name,
-            find_fornecedor_by_substring_name,  
+            find_fornecedor_by_substring_name,
+            get_categorias
           ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

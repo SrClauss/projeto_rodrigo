@@ -10,6 +10,7 @@ import CadastroFornecedor from "../../modals/CadastroFornecedor";
 import CardClientes from "../../components/CardClientes/CardClientes";
 import { Button, Card } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
+import CadastroPedidos from "../../modals/CadastroPedidos";
 export default function MainScreen({ privilege }) {
     const [showModal, setShowModal] = useState(false);
     const [componentModal, setComponentModal] = useState(null);
@@ -60,6 +61,59 @@ export default function MainScreen({ privilege }) {
         <>
             <div>
                 <div className="main-screen">
+
+                    <div className="left-menu">
+
+                        <button
+                            onClick={() => {
+                                handleModal();
+                                setComponentModal(<CadastroCliente />);
+                            }}
+
+                        >
+                            <div><PersonAddAlt /></div>
+                            <div className="label-button">Cadastrar Cliente</div>
+                        </button>
+                        <button
+                            onClick={() => {
+                                handleModal();
+                                setComponentModal(<CadastroFornecedor />);
+                            }}>
+                            <div><Agriculture /></div>
+                            <div className="label-button">Cadastrar Fornecedor</div>
+                        </button>
+                        <button
+                            onClick={() => {
+                                handleModal();
+                                setComponentModal(<CadastroPedidos />);
+                            }}
+
+                        
+                        >
+                            <div><Store /></div>
+                            <div className="label-button">Pedidos</div>
+                        </button>
+                        <button>
+                            <div><CalendarMonth /></div>
+                            <div className="label-button">Pedidos Recorrentes</div>
+                        </button>
+
+                        <button>
+                            <div><ExitToAppSharp /></div>
+                            <div className="label-button">Sair</div>
+                        </button>
+                        <button>
+                            <div><InfoSharp /></div>
+                            <div className="label-button">Sobre</div>
+                        </button>
+                        <button onClick={handleConfigScreen} >
+                            <div><AdminPanelSettingsSharp /></div>
+                            <div className="label-button" >Configurações</div>
+                        </button>
+
+                    </div>
+                    <Modal show={showModal} onClose={() => setShowModal(false)} component={componentModal} />
+
                     <div className="content">
 
                         <div className="barra-pesquisa">
@@ -87,50 +141,7 @@ export default function MainScreen({ privilege }) {
 
                         </div>
                     </div>
-                    <Modal show={showModal} onClose={() => setShowModal(false)} component={componentModal} />
-                    <div className="right-menu">
 
-                        <button
-                            onClick={() => {
-                                handleModal();
-                                setComponentModal(<CadastroCliente />);
-                            }}
-
-                        >
-                            <div><PersonAddAlt /></div>
-                            <div className="label-button">Cadastrar Cliente</div>
-                        </button>
-                        <button
-                            onClick={() => {
-                                handleModal();
-                                setComponentModal(<CadastroFornecedor />);
-                            }}>
-                            <div><Agriculture /></div>
-                            <div className="label-button">Cadastrar Fornecedor</div>
-                        </button>
-                        <button>
-                            <div><Store /></div>
-                            <div className="label-button">Pedidos</div>
-                        </button>
-                        <button>
-                            <div><CalendarMonth /></div>
-                            <div className="label-button">Pedidos Recorrentes</div>
-                        </button>
-
-                        <button>
-                            <div><ExitToAppSharp /></div>
-                            <div className="label-button">Sair</div>
-                        </button>
-                        <button>
-                            <div><InfoSharp /></div>
-                            <div className="label-button">Sobre</div>
-                        </button>
-                        <button onClick={handleConfigScreen} >
-                            <div><AdminPanelSettingsSharp /></div>
-                            <div className="label-button" >Configurações</div>
-                        </button>
-
-                    </div>
                 </div>
 
 

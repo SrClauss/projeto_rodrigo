@@ -11,7 +11,6 @@ pub struct Produto {
     #[serde(rename = "_id")]
     pub id: ObjectId,
     pub nome: String,
-    pub descricao: String,
     pub categoria_id: ObjectId,
     pub itens: Vec<ItemProduto>,
 
@@ -19,16 +18,13 @@ pub struct Produto {
 
 impl Produto {
     pub fn new(
-
         nome: String,
-        descricao: String,
         categoria_id: ObjectId,
         itens: Option<Vec<ItemProduto>>,
     ) -> Result<Self, String> {
         Ok(Produto {
             id: ObjectId::new(),
             nome,
-            descricao,
             categoria_id,
             itens: itens.unwrap_or(vec![]),
         })
