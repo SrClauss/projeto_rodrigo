@@ -13,7 +13,9 @@ pub struct Produto {
     pub nome: String,
     pub categoria_id: ObjectId,
     pub itens: Vec<ItemProduto>,
-
+    pub preco_compra_sugerido: f64,
+    pub preco_venda_sugerido: f64,
+    pub unidade: String,
 }
 
 impl Produto {
@@ -21,12 +23,18 @@ impl Produto {
         nome: String,
         categoria_id: ObjectId,
         itens: Option<Vec<ItemProduto>>,
+        preco_compra_sugerido: f64,
+        preco_venda_sugerido: f64,
+        unidade: String
     ) -> Result<Self, String> {
         Ok(Produto {
             id: ObjectId::new(),
             nome,
             categoria_id,
             itens: itens.unwrap_or(vec![]),
+            preco_compra_sugerido,
+            preco_venda_sugerido,
+            unidade
         })
     }
  

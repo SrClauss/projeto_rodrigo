@@ -1,3 +1,5 @@
+use std::io::Cursor;
+
 use crate::database::connect;
 use async_trait::async_trait;
 use mongodb::bson::oid::ObjectId;
@@ -5,6 +7,7 @@ use mongodb::bson::{doc, Bson};
 use mongodb::Collection;
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::Value;
+use crate::utilities::compare_strings;
 
 #[async_trait]
 pub trait Crudable: Send + Sync + DeserializeOwned + Serialize + Clone {
@@ -135,27 +138,40 @@ pub trait Crudable: Send + Sync + DeserializeOwned + Serialize + Clone {
 
     async fn element_what_contains(param: String, value: Bson) -> Result<Vec<Self>, String> {
         let collection = Self::collection().await;
-        let filter = doc! {
-            param:{
-                "$regex": value,
-                "$options": "i"
-            }
-        };
-        let mut cursor = collection.find(filter).await.map_err(|e| e.to_string())?;
+        let mut cursor = collection.find(doc! {}).await.map_err(|e| e.to_string())?;
         let mut results = Vec::new();
+       
         while cursor.advance().await.map_err(|e| e.to_string())? {
             let doc = cursor.deserialize_current();
             match doc {
-                Ok(doc) => results.push(doc),
+                Ok(doc) =>{
+                    let serialized_doc = doc.serialize_crudable()?;
+                    let value_result = serialized_doc[param.as_str()].as_str();
+                    if value_result.is_none() {
+                        continue;
+                    }
+                    let value_result = value_result.unwrap();
+                    if compare_strings(value_result, value.as_str().unwrap()) {
+                        results.push(doc);
+                    }
+
+                }
                 Err(e) => {
                     println!("Erro ao deserializar documento : {}", e);
                     continue;
                 }
+                
             }
         }
         Ok(results)
-    }
 
+
+        
+
+        
+        
+    
+    }
     async fn exists_with_param(param: &str, value: Bson) -> Result<bool, String> {
         let collection = Self::collection().await;
         let filter = doc! {param: value};

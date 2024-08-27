@@ -1,0 +1,21 @@
+.product {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.search {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.search-results {
+    display: flex;
+    flex-direction: column;
+    padding-right: 40px;
+}

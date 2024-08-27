@@ -3,6 +3,7 @@ import { createTheme, ThemeProvider } from '@mui/material';
 import MainScreen from './screens/MainScreen/MainScreen';
 import LoginScreen from './screens/LoginScreen/LoginScreen';
 import AdminScreen from './screens/AdminScreen/AdminScreen';
+import CadastroEntradaEstoque from './screens/CadastroEntradaEstoque/CadastroEntradaEstoque';
 import { NavigationProvider, NavigationContext } from './NavigationContext';
 
 const App = () => {
@@ -23,6 +24,8 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <NavigationProvider>
+
+
         <ScreenRenderer />
       </NavigationProvider>
       
@@ -40,6 +43,8 @@ const ScreenRenderer = () => {
       return <MainScreen />;
     case 'AdminScreen':
       return <AdminScreen />;
+    case 'CadastroEntradaEstoque':
+      return <CadastroEntradaEstoque />;
     default:
       return <LoginScreen />;
   }

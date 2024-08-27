@@ -220,11 +220,26 @@ async fn create_a_produto(data: Value) -> Result<String, String> {
     if categoria.is_err() {
         return Err("Id da categoria inválido".to_string());
     }
+    println!("{:?}", data["preco_compra_sugerido"]);
+    let preco_compra_sugerido = data["preco_compra_sugerido"].as_f64().unwrap_or(0.0);
+    let preco_venda_sugerido = data["preco_venda_sugerido"].as_f64().unwrap_or(0.0);
+    let unidade = data["unidade"].as_str();
+    if unidade.is_none() {
+        return Err("Unidade não informada".to_string());
+    }
+    let unidade = unidade.unwrap();
+
+
     let categoria = categoria.unwrap();
     let produto = Produto::new(
         name.to_string(),
         categoria,
         None,
+        preco_compra_sugerido,
+        preco_venda_sugerido,
+        unidade.to_string(),
+        
+
     );
     if produto.is_err() {
         return Err(produto.err().unwrap());
@@ -264,6 +279,35 @@ async fn get_categorias() -> Result<Vec<Categoria>, String> {
     }
     Ok(categorias.unwrap())
 }
+#[tauri::command]
+async fn find_produto_by_substring_name(name_substring: String) -> Result<Vec<Produto>, String> {
+
+    let produtos = Produto::element_what_contains("nome".to_string(), Bson::String(name_substring)).await;
+    if produtos.is_err() {
+        return Err(produtos.err().unwrap());
+    }
+    Ok(produtos.unwrap())
+}
+
+#[tauri::command]
+async fn find_fornecedor_name(fornecedor_id:&str) -> Result<String, String>
+{
+    let fornecedor = Fornecedor::read(fornecedor_id).await;
+    if fornecedor.is_err() {
+        return Err(fornecedor.err().unwrap());
+    }
+    Ok(fornecedor.unwrap().nome)
+}
+
+#[tauri::command]
+async fn find_all_fornecedores() -> Result<Vec<Fornecedor>, String> {
+    let fornecedores = Fornecedor::find_all().await;
+    if fornecedores.is_err() {
+        return Err(fornecedores.err().unwrap());
+    }
+    Ok(fornecedores.unwrap())
+}
+
 fn main() {
     block_on(async {
         let result = create_a_admin_if_dont_exists().await;
@@ -282,7 +326,10 @@ fn main() {
             login,
             find_cliente_by_substring_name,
             find_fornecedor_by_substring_name,
-            get_categorias
+            get_categorias,
+            find_produto_by_substring_name,
+            find_fornecedor_name, 
+            find_all_fornecedores
           ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

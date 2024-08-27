@@ -69,3 +69,59 @@ pub fn validar_cnpj(cnpj: &str) -> bool {
 pub fn naive_to_ymd(data: NaiveDate) -> NaiveDate {
     NaiveDate::from_ymd_opt(data.year(), data.month0(), data.day0()).unwrap()
 }
+
+pub fn compare_strings(criterio: &str, chave: &str) -> bool {
+    let without_acents_a = criterio
+        .chars()
+        .map(|c| match c {
+            'á' => 'a',
+            'à' => 'a',
+            'ã' => 'a',
+            'â' => 'a',
+            'é' => 'e',
+            'ê' => 'e',
+            'í' => 'i',
+            'ó' => 'o',
+            'ô' => 'o',
+            'õ' => 'o',
+            'ú' => 'u',
+            'ç' => 'c',
+            _ => c,
+        })
+        .collect::<String>();
+
+    let without_acents_b = chave
+        .chars()
+        .map(|c| match c {
+            'á' => 'a',
+            'à' => 'a',
+            'ã' => 'a',
+            'â' => 'a',
+            'é' => 'e',
+            'ê' => 'e',
+            'í' => 'i',
+            'ó' => 'o',
+            'ô' => 'o',
+            'õ' => 'o',
+            'ú' => 'u',
+            'ç' => 'c',
+            _ => c,
+        })
+        .collect::<String>();
+
+
+    without_acents_a.to_lowercase().contains(&without_acents_b.to_lowercase())
+}
+
+#[cfg(test)]
+
+mod tests {
+    use super::*;
+    #[test]
+    fn test_compare_strings() {
+        assert_eq!(compare_strings("a", "a"), true);
+        assert_eq!(compare_strings("a", "A"), true);
+        assert_eq!(compare_strings("abaccate","áb" ), true);
+        assert_eq!(compare_strings("a", "b"), false);
+    }
+}

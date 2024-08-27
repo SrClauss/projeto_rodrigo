@@ -7,6 +7,7 @@ import Modal from "./Modal"
 import { invoke } from "@tauri-apps/api"
 
 
+
 export default function CadastroCliente({ onSetComponentModal, initialData = {} }) {
     const [data, setData] = useState({ ...initialData, enderecos: initialData.enderecos || [] })
 
@@ -100,7 +101,7 @@ export default function CadastroCliente({ onSetComponentModal, initialData = {} 
                                 }
                             } />
 
-
+                            
                             <Button onClick={(_) => handleSaveData(data)} fullWidth variant="contained">Salvar</Button>
 
 

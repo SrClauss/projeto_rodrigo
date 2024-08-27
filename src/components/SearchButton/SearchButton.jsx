@@ -11,7 +11,7 @@ export default function SearchButton({ onSubmitSearch, onSetCategory }) {
   return (
     <Paper
       component="form"
-      sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: "auto" }}
+      sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: "100%" }}
     >
       <IconButton sx={{ p: '10px' }} aria-label="menu">
         <Person2 color='primary' />
@@ -23,7 +23,7 @@ export default function SearchButton({ onSubmitSearch, onSetCategory }) {
         inputProps={{ 'aria-label': 'search google maps' }}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-      />
+        onKeyDown={(e) => { if (e.key === 'Enter'){ onSubmitSearch(search) }}}      />
       <IconButton onClick={()=>onSubmitSearch(search)} type="button" sx={{ p: '10px' }} aria-label="search">
         <SearchIcon  color='primary'/>
       </IconButton>

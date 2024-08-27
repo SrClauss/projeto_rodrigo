@@ -1,0 +1,33 @@
+
+.card-produto{
+    display: flex ;
+    flex-direction: column;
+    padding: 5px 15px 5px 15px;
+    border: 1px solid var(--cor-primaria);
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.card-content{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    flex-direction: row;
+    justify-content: space-between;
+    color: var(--cor-quaternaria);
+  
+}
+
+.card-produto:hover{
+    border: 1px solid var(--cor-secundaria);
+    cursor: pointer;
+    
+}
+.left-col{
+    text-align: left;
+}
+.center-col{
+    text-align: center;
+}
+.right-col{
+    text-align: right;
+}

@@ -1,4 +1,4 @@
-import { AdminPanelSettingsSharp, Agriculture, CalendarMonth, ExitToAppSharp, InfoSharp, PersonAdd, PersonAddAlt, SettingsSuggest, ShoppingBasket, Store } from "@mui/icons-material";
+import { AdminPanelSettingsSharp, Agriculture, CalendarMonth, ExitToAppSharp, InfoSharp, PersonAdd, PersonAddAlt, SettingsSuggest, ShoppingBasket, Store, Warehouse } from "@mui/icons-material";
 import "./MainScreen.css";
 import Modal from "../../modals/Modal";
 import { useEffect, useState } from "react";
@@ -11,6 +11,7 @@ import CardClientes from "../../components/CardClientes/CardClientes";
 import { Button, Card } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import CadastroPedidos from "../../modals/CadastroPedidos";
+import CadastroEntradaEstoque from "../CadastroEntradaEstoque/CadastroEntradaEstoque";
 export default function MainScreen({ privilege }) {
     const [showModal, setShowModal] = useState(false);
     const [componentModal, setComponentModal] = useState(null);
@@ -29,13 +30,17 @@ export default function MainScreen({ privilege }) {
         setActiveScreen("AdminScreen");
 
     }
+
+    const handleCadastroEntradaEstoque = () => {
+        setActiveScreen("CadastroEntradaEstoque")
+    }
     const handleSubmitSearch = (key) => {
 
         if (criterio === "Cliente") {
             invoke("find_cliente_by_substring_name", { nameSubstring: key }).then((response) => {
 
                 setPessoa(response)
-                console.log(response)
+
             }).catch((error) => {
                 console.log(error)
             })
@@ -50,6 +55,12 @@ export default function MainScreen({ privilege }) {
                 console.log(error)
             })
         }
+
+    }
+    const handleCreatePedido = (cliente) => {
+
+        handleModal();
+        setComponentModal(<CadastroPedidos cliente={cliente} />)
 
     }
 
@@ -82,29 +93,26 @@ export default function MainScreen({ privilege }) {
                             <div><Agriculture /></div>
                             <div className="label-button">Cadastrar Fornecedor</div>
                         </button>
-                        <button
-                            onClick={() => {
-                                handleModal();
-                                setComponentModal(<CadastroPedidos />);
-                            }}
 
-                        
-                        >
-                            <div><Store /></div>
-                            <div className="label-button">Pedidos</div>
-                        </button>
                         <button>
                             <div><CalendarMonth /></div>
                             <div className="label-button">Pedidos Recorrentes</div>
                         </button>
 
+
+                        <button
+                            onClick={() => {
+                                handleCadastroEntradaEstoque();
+                            }}
+
+
+                        >
+                            <div><Warehouse /></div>
+                            <div className="label-button">Entrada de Estoque</div>
+                        </button>
                         <button>
                             <div><ExitToAppSharp /></div>
                             <div className="label-button">Sair</div>
-                        </button>
-                        <button>
-                            <div><InfoSharp /></div>
-                            <div className="label-button">Sobre</div>
                         </button>
                         <button onClick={handleConfigScreen} >
                             <div><AdminPanelSettingsSharp /></div>
@@ -115,12 +123,12 @@ export default function MainScreen({ privilege }) {
                     <Modal show={showModal} onClose={() => setShowModal(false)} component={componentModal} />
 
                     <div className="content">
-
                         <div className="barra-pesquisa">
                             <SearchButton onSubmitSearch={handleSubmitSearch} onSetCategory={(e) => setCriterio(e)} />
 
 
                             <div className="content-mutable">
+
                                 {pessoa.length != 0 &&
                                     <div className="button-limpar">
                                         <Button
@@ -131,8 +139,8 @@ export default function MainScreen({ privilege }) {
                                 {
 
 
-                                    pessoa.map((pessoa) => {
-                                        return <CardClientes pessoa={pessoa} />
+                                    pessoa.map((pessoa, index) => {
+                                        return <CardClientes key={index} pessoa={pessoa} onCreatePedido={handleCreatePedido} />
                                     })
                                 }
 

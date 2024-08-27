@@ -1,4 +1,4 @@
-import { Divider, IconButton } from "@mui/material";
+import { Divider, IconButton, Tooltip } from "@mui/material";
 import "./CardClientes.css";
 import { AddBusiness, DeleteForeverRounded, Edit, Person2Outlined, Person2Rounded, Shop, Shop2 } from "@mui/icons-material";
 const cli = {
@@ -8,11 +8,11 @@ const cli = {
     telefone: "(11) 99999-9999",
     email: "joao@hotmail.com"
 }
-export default function CardClientes({pessoa, onDeleteCliente, onEditCliente, onCreatePedido }) {
+export default function CardClientes({ pessoa, onDeleteCliente, onEditCliente, onCreatePedido }) {
     return (
         <div className="card-cliente">
             <div className="card-cliente-icon">
-                <Person2Rounded color="secondary" fontSize="large"/>
+                <Person2Rounded color="secondary" fontSize="large" />
             </div>
             <Divider orientation="vertical" flexItem />
             <div className="card-cliente-info">
@@ -28,15 +28,21 @@ export default function CardClientes({pessoa, onDeleteCliente, onEditCliente, on
                     <div>CPF/CNPJ: {pessoa.cpf_cnpj}</div>
                     <Divider orientation="vertical" flexItem />
                     <div>Telefone: {pessoa.telefone}</div>
-                
+
                 </div>
 
             </div>
             <Divider orientation="vertical" flexItem />
             <div className="card-cliente-actions">
-                <IconButton onClick={() => onEditCliente(pessoa.id)}><Edit color="secondary"/></IconButton>
-                <IconButton onClick={() => onDeleteCliente(pessoa.id)}><DeleteForeverRounded color="secondary"/></IconButton>
-                <IconButton onClick={()=> onCreatePedido(pessoa.id)}><Shop color="secondary"/></IconButton>
+                <Tooltip title="Editar Cliente" arrow>
+                    <IconButton onClick={() => onEditCliente(pessoa._id.$oid)}><Edit color="secondary" /></IconButton>
+                </Tooltip>
+                <Tooltip title="Excluir Cliente" arrow>
+                    <IconButton onClick={() => onDeleteCliente(pessoa._id.$oid)}><DeleteForeverRounded color="secondary" /></IconButton>
+                </Tooltip>
+                <Tooltip title="Cadastrar Pedido" arrow>
+                    <IconButton onClick={() => onCreatePedido(pessoa)}><Shop color="secondary" /></IconButton>
+                </Tooltip>
 
             </div>
         </div>

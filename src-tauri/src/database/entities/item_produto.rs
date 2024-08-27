@@ -30,7 +30,7 @@ impl ItemProduto {
         lote: Option<String>,
         data_fabricacao: DateTime,
         data_validade: DateTime,
-    ) -> Self {
+    ) -> Self {        
         ItemProduto {
             id: ObjectId::new(),    
             fornecedor_id,
