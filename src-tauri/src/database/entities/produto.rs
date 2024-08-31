@@ -45,6 +45,7 @@ impl Produto {
     pub fn produtos_ids(&self) -> Vec<ObjectId> {
         self.itens.iter().map(|item| item.id).collect()
     }
+   
 
    
 }
