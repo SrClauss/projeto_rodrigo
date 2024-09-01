@@ -34,37 +34,7 @@ export default function CadastroProdutos({ onSetComponentModal, initialData = {}
     }, [data])
     const handleSubmitData = () => {
 
-        console.log(data)
-        const adaptedData = {
-            nome: data.nome,
-            categoria_id: data.categoria,
-            preco_compra_sugerido: parseFloat(data.preco_compra_sugerido.replace(',', '.')),
-            preco_venda_sugerido: parseFloat(data.preco_venda_sugerido.replace(',', '.')),
-            unidade: data.unidade
-
-
-        }
-    
-        if (!adaptedData.nome || !adaptedData.categoria_id || !adaptedData.preco_compra_sugerido || !adaptedData.preco_venda_sugerido || !adaptedData.unidade) {
-            dialog.message('Preencha todos os campos')
-            return
-        }
- 
-        invoke('create_a_produto', { data: adaptedData }).then((res) => {
-            console.log(res)
-            dialog.message('Produto cadastrado com sucesso')
-            setData({
-                nome: '',
-                categoria: null,
-                preco_compra_sugerido: '',
-                preco_venda_sugerido: '',
-                unidade: ''
-            })
-
-      
-        }).catch((err) => {
-            dialog.message(err)
-        })
+       console.log(data)
             
     }
 
