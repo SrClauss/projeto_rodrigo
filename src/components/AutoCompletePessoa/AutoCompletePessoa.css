@@ -1,0 +1,13 @@
+.option{
+    border-bottom: 1px solid var(--cor-terciaria);
+    color : var(--cor-terciaria);
+    width: 100%;
+}
+.cpf-label{
+    width: 100%;
+
+    text-align: right;
+    font-size: xx-small;
+    color: var(--cor-secundaria);
+
+}

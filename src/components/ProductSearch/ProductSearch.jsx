@@ -6,20 +6,26 @@ import { invoke } from '@tauri-apps/api';
 import CardProdutos from '../CardProdutos/CardProdutos';
 
 
-export default function ProductSearch({ onSubmitSearch, categorias }) {
+export default function ProductSearch({ onSubmitSearch, categorias, trigger}) {
     const [search, setSearch] = useState("");
     const [resultsVisible, setResultsVisible] = useState(false);
     const [results, setResults] = useState([]);
 
     useEffect(() => {
-        console.log(results.length)
-    }, [results])
+        setResultsVisible(false)
+        setResults([])
+        setSearch("")
+
+    }, [trigger])
+    
     const handleSearch = (search) => {
 
         invoke("find_produto_by_substring_name", { nameSubstring: search }).then((response) => {
 
             setResults(response)
             setResultsVisible(true)
+
+
         }).catch((error) => {
             console.log(error)
         }
@@ -61,6 +67,7 @@ export default function ProductSearch({ onSubmitSearch, categorias }) {
                     size='small'
                     placeholder="Pesquisar Produto"
                     inputProps={{ 'aria-label': 'search google maps' }}
+                    value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     onKeyDown={(e) => {
 
@@ -82,11 +89,10 @@ export default function ProductSearch({ onSubmitSearch, categorias }) {
                 {results.map((result, key) => {
                     return (
 
-                        <>
+                      
                             <CardProdutos key={key} produto={result} categorias={categorias} onSelect={(e) => onSubmitSearch(e)} />
 
-                        </>
-
+                      
                     )
                 })}
             </div>

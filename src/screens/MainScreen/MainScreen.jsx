@@ -11,7 +11,6 @@ import CardClientes from "../../components/CardClientes/CardClientes";
 import { Button, Card } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import CadastroPedidos from "../../modals/CadastroPedidos";
-import CadastroEntradaEstoque from "../CadastroEntradaEstoque/CadastroEntradaEstoque";
 export default function MainScreen({ privilege }) {
     const [showModal, setShowModal] = useState(false);
     const [componentModal, setComponentModal] = useState(null);
@@ -31,7 +30,7 @@ export default function MainScreen({ privilege }) {
 
     }
 
-    const handleCadastroEntradaEstoque = () => {
+    const handleEntradaEstoque = () => {
         setActiveScreen("CadastroEntradaEstoque")
     }
     const handleSubmitSearch = (key) => {
@@ -102,7 +101,7 @@ export default function MainScreen({ privilege }) {
 
                         <button
                             onClick={() => {
-                                handleCadastroEntradaEstoque();
+                                handleEntradaEstoque();
                             }}
 
 

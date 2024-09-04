@@ -2,6 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 pub mod database;
 pub mod utilities;
+use std::str::FromStr;
+
 use chrono::NaiveDate;
 use database::entities::cliente::Cliente;
 use database::entities::endereco::Endereco;
@@ -10,10 +12,12 @@ use database::entities::user::User;
 use database::entities::categoria::Categoria;
 use database::entities::produto::Produto;
 use database::traits::crudable::{Crudable, Privilege};
+use mongodb::bson::oid::ObjectId;
 use mongodb::bson::{doc, Bson};
 use serde_json::Value;
 use tauri::async_runtime::block_on;
 use utilities::{naive_to_bson, dia_semana_mes};
+use database::entities::movimentacao::{Movimentacao, TipoMovimentacao};
 
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -207,7 +211,25 @@ async fn create_a_categoria(data: Value) -> Result<String, String>{
     }
     Ok("Categoria criada com sucesso".to_string())
 }
-
+#[tauri::command]
+async fn create_a_produto(data: Value) -> Result<String, String> {
+    let produto = Produto::new(
+        data["nome"].as_str().unwrap_or("").to_string(),
+        ObjectId::from_str(data["categoria_id"].as_str().unwrap_or("")).unwrap(),
+        data["preco_compra"].as_str().unwrap_or("").parse::<f64>().unwrap(),
+        data["preco_venda"].as_str().unwrap_or("").parse::<f64>().unwrap(),
+        data["unidade"].as_str().unwrap_or("").to_string(),
+    );
+    if produto.is_err() {
+        return Err(produto.err().unwrap());
+    }
+    let produto = produto.unwrap();
+    let produto = produto.create(Privilege::Admin).await;
+    if produto.is_err() {
+        return Err(produto.err().unwrap());
+    }
+    Ok("Produto criado com sucesso".to_string())
+}
 #[tauri::command]
 async fn find_cliente_by_substring_name(name_substring: String) -> Result<Vec<Cliente>, String> {
 
@@ -243,7 +265,6 @@ async fn find_produto_by_substring_name(name_substring: String) -> Result<Vec<Pr
     }
     Ok(produtos.unwrap())
 }
-
 #[tauri::command]
 async fn find_fornecedor_name(fornecedor_id:&str) -> Result<String, String>
 {
@@ -253,7 +274,6 @@ async fn find_fornecedor_name(fornecedor_id:&str) -> Result<String, String>
     }
     Ok(fornecedor.unwrap().nome)
 }
-
 #[tauri::command]
 async fn find_all_fornecedores() -> Result<Vec<Fornecedor>, String> {
     let fornecedores = Fornecedor::find_all().await;
@@ -262,7 +282,49 @@ async fn find_all_fornecedores() -> Result<Vec<Fornecedor>, String> {
     }
     Ok(fornecedores.unwrap())
 }
+#[tauri::command]
+async fn movimentacao_entrada(data: Value) -> Result<String, String> {
 
+    let movimentacao = Movimentacao::new(
+        ObjectId::from_str(data["produto_id"].as_str().unwrap_or("")).unwrap(),
+        TipoMovimentacao::Entrada,
+        data["quantidade"].as_f64().unwrap(),
+        data["data"].as_str().unwrap().to_string(),
+        Some(ObjectId::from_str(data["fornecedor_id"].as_str().unwrap()).unwrap()),
+        None,
+        Some("Entrada:".to_string()),
+    );
+    if movimentacao.is_err() {
+        return Err(movimentacao.err().unwrap());
+    }
+    let movimentacao = movimentacao.unwrap();
+    let movimentacao = movimentacao.create(Privilege::Admin).await;
+    if movimentacao.is_err() {
+        return Err(movimentacao.err().unwrap());
+    }
+    Ok("Movimentação de entrada realizada com sucesso".to_string())
+}
+#[tauri::command]
+async fn movimentacao_saida(data: Value) -> Result<String, String> {
+    let movimentacao = Movimentacao::new(
+        ObjectId::from_str(data["produto_id"].as_str().unwrap_or("")).unwrap(),
+        TipoMovimentacao::Saida,
+        data["quantidade"].as_str().unwrap_or("").parse::<f64>().unwrap(),
+        data["data"].as_str().unwrap_or("").to_string(),
+        None,
+        Some(ObjectId::from_str(data["cliente_id"].as_str().unwrap_or("")).unwrap()),
+        Some("Saída:".to_string()),
+    );
+    if movimentacao.is_err() {
+        return Err(movimentacao.err().unwrap());
+    }
+    let movimentacao = movimentacao.unwrap();
+    let movimentacao = movimentacao.create(Privilege::Admin).await;
+    if movimentacao.is_err() {
+        return Err(movimentacao.err().unwrap());
+    }
+    Ok("Movimentação de saída realizada com sucesso".to_string())
+}
 fn main() {
     let date = NaiveDate::parse_from_str("07/01/2024", "%d/%m/%Y").unwrap();
     let date = naive_to_bson(date);
@@ -281,13 +343,16 @@ fn main() {
             create_a_cliente,
             create_a_fornecedor,
             create_a_categoria,
+            create_a_produto,
             login,
             find_cliente_by_substring_name,
             find_fornecedor_by_substring_name,
             get_categorias,
             find_produto_by_substring_name,
             find_fornecedor_name, 
-            find_all_fornecedores
+            find_all_fornecedores, 
+            movimentacao_entrada, 
+            movimentacao_saida
           ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

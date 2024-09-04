@@ -1,0 +1,66 @@
+.raiz {
+   display: flex;
+   flex-direction: column;
+   column-gap: 2px;
+   align-items: center;
+   justify-content: space-between;
+   margin-top: 5px;
+   border: 2px solid var(--cor-primaria);
+   padding: 10px;
+   border-radius: 5px;
+   margin-bottom: 5px;
+   padding-top: 25px;
+
+
+}
+
+.three-col {
+
+   gap: 10px;
+   display: flex;
+   width: 100%;
+   margin-bottom: 10px;
+}
+
+.label {
+   width: 40%;
+   padding-top: 10px;
+   padding-left: 5px;
+   font-size: 1.2em;
+
+}
+
+.quant {
+
+   width: 20%;
+   padding-top: 10px;
+   padding-left: 5px;
+   font-size: 1.2em;
+}
+
+.lote {
+
+   width: 35%;
+   padding-top: 10px;
+   padding-left: 5px;
+   font-size: 1.2em;
+}
+
+.fornecedor {
+   width: 40%;
+}
+.estoque{
+   width: 100%;
+   margin-top: -30px;
+   margin-bottom: 10px;
+
+   
+   
+}
+.estoque-demanda-positivo {
+   color: green;
+}
+
+.estoque-demanda-negativo {
+   color: red;
+}

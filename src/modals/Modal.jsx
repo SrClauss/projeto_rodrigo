@@ -13,7 +13,7 @@ const Modal = ({ show, onClose, component, initialData={} }) => {
 
     <div className="modal-overlay">
       <div className="modal-content">
-        <button className="modal-close" onClick={onClose}>X</button>
+        <button className="modal-close" tabIndex={-1} onClick={onClose}>X</button>
         {React.cloneElement(component, { onSetComponentModal: onClose, initialData: initialData })}
       </div>
     </div>

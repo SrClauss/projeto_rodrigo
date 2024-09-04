@@ -1,19 +1,23 @@
 import { AdminPanelSettingsSharp, Agriculture, ArrowBack, BackHandRounded, CalendarMonth, Category, ExitToAppSharp, Fastfood, InfoSharp, PersonAdd, PersonAddAlt, PersonAddAlt1TwoTone, ProductionQuantityLimits, ProductionQuantityLimitsSharp, SettingsSuggest, ShoppingBasket, Spa, Store, VerifiedUserSharp } from "@mui/icons-material";
 import "../MainScreen/MainScreen.css";
 import Modal from "../../modals/Modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CadastroCliente from "../../modals/CadastroCliente";
 import { NavigationContext } from "../../NavigationContext";
 import React from "react";
 import CadastroCategoria from "../../modals/CadastroCategoria";
 import CadastroProdutos from "../../modals/CadastroProdutos";
+import AutoCompleteCliente from "../../components/AutoCompletePessoa/AutoCompleteCliente";
 
 export default function AdminScreen({ privilege }) {
 
     const { setActiveScreen } = React.useContext(NavigationContext);
     const [showModal, setShowModal] = useState(false);
     const [componentModal, setComponentModal] = useState(null);
-
+    const [tabOrders , setTabOrders] = useState([1,2,3,4]);
+    useEffect(() => {
+        console.log(tabOrders)
+    }, [tabOrders])
     const handleModal = () => {
         setShowModal(true);
         setComponentModal(componentModal);
@@ -36,6 +40,7 @@ export default function AdminScreen({ privilege }) {
                         
                     <div className="left-menu">
                         <button
+                            tabIndex={tabOrders[0]}
                             onClick={() => {
                                 handleModal();
                                 setComponentModal(<CadastroCategoria />);
@@ -45,35 +50,38 @@ export default function AdminScreen({ privilege }) {
                             <div><Category /></div>
                             <div className="label-button">Cadastrar Categoria</div>
                         </button>
-                        <button>
+                        <button
+                            tabIndex={tabOrders[1]}
+                            
+                            
+                        >
+                            
                             <div><PersonAddAlt1TwoTone /></div>
                             <div className="label-button">Cadastrar Usuário</div>
                         </button>
                         <button
+                            tabIndex={tabOrders[2]}
                             onClick={() => {
                                 handleModal();
-                                setComponentModal(<CadastroProdutos />);
+                                setComponentModal(<CadastroProdutos onSetTabOrders={setTabOrders} />);
+                                setTabOrders([-1,-1,-1,-1]);
                             }}
                         >
                             <div><Spa /></div>
                             <div className="label-button">Cadastrar Produtos</div>
                         </button>
-                        <button onClick={handleMainScreen}>
+                        <button
+                        tabIndex={tabOrders[3]}
+                        onClick={handleMainScreen}>
                             <div><ArrowBack /></div>
                             <div className="label-button">Voltar</div>
                         </button>
 
 
                     </div>
+                    <AutoCompleteCliente />
                     <Modal show={showModal} onClose={() => setShowModal(false)} component={componentModal} />
-                    <div className="content">
-
-                        <div className="barra-pesquisa">
-
-
-
-                        </div>
-                    </div>
+                   
 
 
                 </div>

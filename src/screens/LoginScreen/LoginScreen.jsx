@@ -48,7 +48,14 @@ export default function LoginScreen() {
                         <input
                             type="password"
                             placeholder="Senha"
-                            onChange={(e) => setPassword(e.target.value)} />
+                            onChange={(e) => setPassword(e.target.value)} 
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    handleLogin()
+                            }}}
+                            
+                            />
+                        
                         <button onClick={handleLogin}>Login</button>
 
 

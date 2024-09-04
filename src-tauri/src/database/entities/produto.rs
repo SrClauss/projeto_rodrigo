@@ -14,8 +14,8 @@ pub struct Produto {
     pub preco_compra: f64,
     pub preco_venda: f64,
     pub unidade: String,
-    pub estoque: f64,
-    pub demanda: f64,
+    pub estoque_demanda: f64,
+    
 }
 
 impl Produto {
@@ -35,13 +35,12 @@ impl Produto {
             preco_compra,
             preco_venda,
             unidade,
-            estoque: 0.0,
-            demanda: 0.0,
+            estoque_demanda: 0.0,
+            
         })
-    }
- 
- 
 
+    }
+   
    
 
    
