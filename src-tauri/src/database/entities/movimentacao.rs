@@ -1,4 +1,4 @@
-use super::produto::{self, Produto};
+use super::produto::Produto;
 use crate::database::traits::crudable::{Crudable, Privilege};
 use async_trait::async_trait;
 use mongodb::bson::doc;
