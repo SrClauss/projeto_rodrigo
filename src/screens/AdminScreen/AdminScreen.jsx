@@ -59,6 +59,25 @@ export default function AdminScreen({ privilege }) {
                             <div><PersonAddAlt1TwoTone /></div>
                             <div className="label-button">Cadastrar Usuário</div>
                         </button>
+
+                        <button
+                            onClick={() => {
+                                handleModal();
+                                setComponentModal(<CadastroCliente />);
+                            }}
+
+                        >
+                            <div><PersonAddAlt /></div>
+                            <div className="label-button">Cadastrar Cliente</div>
+                        </button>
+                        <button
+                            onClick={() => {
+                                handleModal();
+                                setComponentModal(<CadastroFornecedor />);
+                            }}>
+                            <div><Agriculture /></div>
+                            <div className="label-button">Cadastrar Fornecedor</div>
+                        </button>
                         <button
                             tabIndex={tabOrders[2]}
                             onClick={() => {
@@ -79,8 +98,7 @@ export default function AdminScreen({ privilege }) {
 
 
                     </div>
-                    <AutoCompleteCliente />
-                    <Modal show={showModal} onClose={() => setShowModal(false)} component={componentModal} />
+              <Modal show={showModal} onClose={() => setShowModal(false)} component={componentModal} />
                    
 
 

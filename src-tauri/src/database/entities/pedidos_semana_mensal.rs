@@ -13,7 +13,7 @@ use mongodb::bson::DateTime;
 
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-struct PedidosSemanaisMensais{
+pub struct PedidosSemanaisMensais{
     id: ObjectId,
     data: String,
     dias_recorrentes: Vec<u8>,

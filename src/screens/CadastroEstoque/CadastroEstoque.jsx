@@ -1,21 +1,22 @@
 import React, { useEffect, useRef } from 'react';
-import { TextField } from '@mui/material';
+import { Checkbox, FormControl, FormControlLabel, TextField } from '@mui/material';
 import { useState } from 'react';
 import Estoque from '../../components/Estoque/Estoque';
 import { Alert, Breadcrumbs, Button, Fab, Paper, Snackbar } from '@mui/material';
 import ProductSearch from '../../components/ProductSearch/ProductSearch';
 import { invoke } from '@tauri-apps/api';
 import './CadastroEstoque.css'
-import { ArrowBack } from '@mui/icons-material';
+import { ArrowBack, CheckBox } from '@mui/icons-material';
 import { NavigationContext } from '../../NavigationContext';
+import PedidosRecorrentes from '../../components/PedidosRecorrentes/PedidosRecorrentes';
 export default function CadastroEstoque({ mode }) {
     const { setActiveScreen } = React.useContext(NavigationContext);
     const [itens, setItens] = useState([])
     const [categorias, setCategorias] = useState([])
-    const [pessoas, setPessoas] = useState([])
     const [snackbar, setSnackbar] = useState({ open: false, message: '', type: 'info' })
     const [quantidades, setQuantidades] = useState([])
     const [trigger, setTrigger] = useState(false)
+    const [date, setDate] = useState('')
 
 
 
@@ -70,17 +71,17 @@ export default function CadastroEstoque({ mode }) {
     const handleMovimentacaoEstoque = () => {
         let hasError = false;
         console.log(itens[0]);
-    
+
         const adaptData = (item) => ({
             produto_id: item._id.$oid,
             quantidade: item.quantidade,
-            data: new Date().toISOString(),
+            data: date,
             ...(mode === 'entrada' ? { fornecedor_id: item.fornecedor.id } : { cliente_id: item.cliente.id })
         });
-    
+
         const adaptedData = itens.map(adaptData);
         console.log("Adapted: ", adaptedData);
-    
+
         const validateItem = (item, index) => {
             if (item.quantidade < 1) {
                 setSnackbar({
@@ -108,17 +109,17 @@ export default function CadastroEstoque({ mode }) {
             }
             return false;
         };
-    
+
         itens.forEach((item, index) => {
             if (validateItem(item, index)) {
                 hasError = true;
             }
         });
-    
+
         if (hasError) {
             return;
         }
-    
+
         const invokeMovimentacao = (item, index) => {
             const action = mode === 'entrada' ? 'movimentacao_entrada' : 'movimentacao_saida';
             invoke(action, { data: item }).then((response) => {
@@ -134,9 +135,9 @@ export default function CadastroEstoque({ mode }) {
                 console.log(error);
             });
         };
-    
+
         adaptedData.forEach(invokeMovimentacao);
-    
+
         setItens([]);
         setTrigger(!trigger);
     };
@@ -144,7 +145,9 @@ export default function CadastroEstoque({ mode }) {
 
     return (
         <div className='screen-cad'>
-            <div className='title-screen'>Entrada Estoque</div>
+            <div className='title-screen'>
+                {mode === 'entrada' ? 'Entrada de Estoque' : 'Saída de Estoque'}
+            </div>
             <Paper elevation={2} className='screen-paper'>
 
                 <ProductSearch
@@ -160,9 +163,19 @@ export default function CadastroEstoque({ mode }) {
             <Paper hidden={itens.length == 0} elevation={2} className='screen-paper' >
                 <div className='two-columns'>
                     <div className='sub-title'>Itens Inseridos</div>
-                    <TextField label='Data' type='date' inputProps={
-                        { shrink: true }
-                    } />
+                    <TextField 
+                    label='Data' 
+                    type='date'
+                    size='small'                  
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    value={date.split('T')[0]}
+                    onChange={(e) =>{
+                        const selectedDate = new Date(e.target.value)
+                        setDate(selectedDate.toISOString())
+                    }}
+                    />
                 </div>
                 {itens.map((item, index) => {
                     return <Estoque
@@ -192,7 +205,7 @@ export default function CadastroEstoque({ mode }) {
                     Salvar
                 </Button>
             </Paper>
-
+ 
             <Fab variant="extended" size="medium" color="primary" className='fab-bottom' onClick={handleBack}>
                 <ArrowBack sx={{ mr: 1 }} />
                 Voltar

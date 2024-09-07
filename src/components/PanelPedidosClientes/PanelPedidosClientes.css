@@ -1,0 +1,13 @@
+.root-panel{
+    padding: 10px;
+    border: 1px inset var(--cor-primaria);
+    border-radius: 10px;
+}
+.pedidos{
+    padding: 10px;
+    
+}
+
+.container-pedido{
+    margin-top: 10px;
+}

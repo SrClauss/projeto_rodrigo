@@ -14,7 +14,7 @@ use mongodb::bson::DateTime;
 
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-struct PedidosPorIntervalo{
+pub struct PedidosPorIntervalo{
     id: ObjectId,
     data: String,
     dias_recorrentes: Vec<u8>,

@@ -2,7 +2,7 @@ import { invoke } from '@tauri-apps/api';
 import './AutoCompletePessoa.css';
 import { useEffect, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import { formatStrings } from '../../utils';
+import { formatStrings } from '../../frontend/utils';
 export default function AutoCompleteCliente({ onSetData }) {
 
     const [opcoes, setOpcoes] = useState([])

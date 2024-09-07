@@ -102,7 +102,7 @@ impl Crudable for Movimentacao {
             }
         }
 
-        //faça o updade de produto e a inserção da movimentação
+   
 
 
 

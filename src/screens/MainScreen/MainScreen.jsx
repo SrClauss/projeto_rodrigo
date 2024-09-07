@@ -1,29 +1,21 @@
-import { AdminPanelSettingsSharp, Agriculture, CalendarMonth, ExitToAppSharp, InfoSharp, PersonAdd, PersonAddAlt, SettingsSuggest, ShoppingBasket, Store, Warehouse } from "@mui/icons-material";
+import { AdminPanelSettingsSharp, Agriculture, CalendarMonth, ExitToAppSharp, InfoSharp, PersonAdd, PersonAddAlt, SettingsSuggest, ShoppingBasket, Store, Warehouse, WarehouseOutlined } from "@mui/icons-material";
 import "./MainScreen.css";
-import Modal from "../../modals/Modal";
 import { useEffect, useState } from "react";
-import CadastroCliente from "../../modals/CadastroCliente";
 import SearchButton from "../../components/SearchButton/SearchButton";
 import { NavigationContext } from "../../NavigationContext";
 import React from "react";
-import CadastroFornecedor from "../../modals/CadastroFornecedor";
 import CardClientes from "../../components/CardClientes/CardClientes";
 import { Button, Card } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
-import CadastroPedidos from "../../modals/CadastroPedidos";
+
 export default function MainScreen({ privilege }) {
-    const [showModal, setShowModal] = useState(false);
-    const [componentModal, setComponentModal] = useState(null);
+
     const { setActiveScreen } = React.useContext(NavigationContext);
     const [criterio, setCriterio] = useState("Cliente");
-    const handleModal = () => {
-        setShowModal(true);
-        setComponentModal(componentModal);
-    }
-    const [pessoa, setPessoa] = useState([])
+    const [pessoas, setPessoas] = useState([])
     useEffect(() => {
 
-    }, [pessoa])
+    }, [pessoas])
     const handleConfigScreen = () => {
 
         setActiveScreen("AdminScreen");
@@ -33,12 +25,16 @@ export default function MainScreen({ privilege }) {
     const handleEntradaEstoque = () => {
         setActiveScreen("CadastroEntradaEstoque")
     }
+    const handleSaidaEstoque = () => {
+        setActiveScreen("CadastroSaidaEstoque")
+
+    }
     const handleSubmitSearch = (key) => {
 
         if (criterio === "Cliente") {
             invoke("find_cliente_by_substring_name", { nameSubstring: key }).then((response) => {
 
-                setPessoa(response)
+                setPessoas(response)
 
             }).catch((error) => {
                 console.log(error)
@@ -49,7 +45,7 @@ export default function MainScreen({ privilege }) {
         if (criterio === "Fornecedor") {
             invoke("find_fornecedor_by_substring_name", { nameSubstring: key }).then((response) => {
 
-                setPessoa(response)
+                setPessoas(response)
             }).catch((error) => {
                 console.log(error)
             })
@@ -58,9 +54,7 @@ export default function MainScreen({ privilege }) {
     }
     const handleCreatePedido = (cliente) => {
 
-        handleModal();
-        setComponentModal(<CadastroPedidos cliente={cliente} />)
-
+      setPessoas([cliente])
     }
 
 
@@ -74,28 +68,19 @@ export default function MainScreen({ privilege }) {
 
                     <div className="left-menu">
 
+            
+                     
+
                         <button
                             onClick={() => {
-                                handleModal();
-                                setComponentModal(<CadastroCliente />);
+                                handleSaidaEstoque();
+                                
                             }}
-
+                        
                         >
-                            <div><PersonAddAlt /></div>
-                            <div className="label-button">Cadastrar Cliente</div>
-                        </button>
-                        <button
-                            onClick={() => {
-                                handleModal();
-                                setComponentModal(<CadastroFornecedor />);
-                            }}>
-                            <div><Agriculture /></div>
-                            <div className="label-button">Cadastrar Fornecedor</div>
-                        </button>
-
-                        <button>
-                            <div><CalendarMonth /></div>
-                            <div className="label-button">Pedidos Recorrentes</div>
+                        
+                            <div><WarehouseOutlined /></div>
+                            <div className="label-button">Saída de Estoque</div>
                         </button>
 
 
@@ -119,7 +104,7 @@ export default function MainScreen({ privilege }) {
                         </button>
 
                     </div>
-                    <Modal show={showModal} onClose={() => setShowModal(false)} component={componentModal} />
+                  
 
                     <div className="content">
                         <div className="barra-pesquisa">
@@ -128,17 +113,17 @@ export default function MainScreen({ privilege }) {
 
                             <div className="content-mutable">
 
-                                {pessoa.length != 0 &&
+                                {pessoas.length != 0 &&
                                     <div className="button-limpar">
                                         <Button
-                                            onClick={() => setPessoa([])}
+                                            onClick={() => setPessoas([])}
                                         >Limpar</Button>
                                     </div>
                                 }
                                 {
 
 
-                                    pessoa.map((pessoa, index) => {
+                                    pessoas.map((pessoa, index) => {
                                         return <CardClientes key={index} pessoa={pessoa} onCreatePedido={handleCreatePedido} />
                                     })
                                 }

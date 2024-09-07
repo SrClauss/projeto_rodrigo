@@ -12,7 +12,7 @@ use crate::utilities::dia_mes;
 
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-struct PedidosMensais{
+pub struct PedidosMensais{
     id: ObjectId,
     data: String,
     dias_recorrentes: Vec<u8>,

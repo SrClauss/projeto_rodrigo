@@ -1,0 +1,23 @@
+.red{
+    color: red;
+}
+.green{
+
+    color: var(--cor-secundaria);
+}
+
+.bold{
+    font-weight: bold;
+}
+.detalhes{
+    font-size: 0.8em;
+    color: var(--cor-secundaria);
+}
+.nome-label{
+    width: 100%;
+    text-align: left;
+    color: var(--cor-terciaria);
+
+    padding: 3px;
+   
+}

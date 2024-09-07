@@ -83,6 +83,9 @@ export default function Estoque({ item, onDelete, estoque, onSetData, mode }) {
 
                         }} />
                     }
+                    
+                    
+                        
 
 
                   

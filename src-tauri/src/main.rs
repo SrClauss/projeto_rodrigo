@@ -3,20 +3,28 @@
 pub mod database;
 pub mod utilities;
 use std::str::FromStr;
+use database::entities::{
+    categoria::Categoria, 
+    cliente::Cliente, 
+    fornecedor::Fornecedor, 
+    pedido::Pedido, 
+    produto::Produto,
+    user::User,
+    endereco::Endereco,
+    pedidos_semanais::PedidosSemanais,
+    pedidos_mensais::PedidosMensais,
+    pedidos_por_intervalo::PedidosPorIntervalo,
+    pedidos_semana_mensal::PedidosSemanaisMensais
 
-use chrono::NaiveDate;
-use database::entities::cliente::Cliente;
-use database::entities::endereco::Endereco;
-use database::entities::fornecedor::Fornecedor;
-use database::entities::user::User;
-use database::entities::categoria::Categoria;
-use database::entities::produto::Produto;
+};
+
+
 use database::traits::crudable::{Crudable, Privilege};
+
 use mongodb::bson::oid::ObjectId;
 use mongodb::bson::{doc, Bson};
 use serde_json::Value;
 use tauri::async_runtime::block_on;
-use utilities::{naive_to_bson, dia_semana_mes};
 use database::entities::movimentacao::{Movimentacao, TipoMovimentacao};
 
 
@@ -266,8 +274,7 @@ async fn find_produto_by_substring_name(name_substring: String) -> Result<Vec<Pr
     Ok(produtos.unwrap())
 }
 #[tauri::command]
-async fn find_fornecedor_name(fornecedor_id:&str) -> Result<String, String>
-{
+async fn find_fornecedor_name(fornecedor_id:&str) -> Result<String, String>{
     let fornecedor = Fornecedor::read(fornecedor_id).await;
     if fornecedor.is_err() {
         return Err(fornecedor.err().unwrap());
@@ -325,11 +332,104 @@ async fn movimentacao_saida(data: Value) -> Result<String, String> {
     }
     Ok("Movimentação de saída realizada com sucesso".to_string())
 }
+#[tauri::command]
+async fn create_a_pedido(data: Value) -> Result<String, String> {
+    let pedido = Pedido::new(
+        ObjectId::from_str(data["cliente_id"].as_str().unwrap_or("")).unwrap(),
+        ObjectId::from_str(data["produto_id"].as_str().unwrap_or("")).unwrap(),
+        data["quantidade"].as_str().unwrap_or("").parse::<f64>().unwrap(),
+        data["data"].as_str().unwrap_or("").to_string(),
+        Some(data["entrega"].as_str().unwrap_or("").to_string()),
+        false,
+    );
+    if pedido.is_err() {
+        return Err(pedido.err().unwrap());
+    }
+    let pedido = pedido.unwrap();
+    let pedido = pedido.create(Privilege::User).await;
+    if pedido.is_err() {
+        return Err(pedido.err().unwrap());
+    }
+    Ok("Pedido realizado com sucesso".to_string())
+}
+#[tauri::command]
+async fn create_a_pedido_recorrente(data: Value) -> Result<String, String>{
+    
+    let pedidos = data.get("pedidos");
+    if pedidos.is_none(){
+        return Err("Pedidos não informados".to_string());
+    }
+    let pedidos = pedidos.unwrap().as_array().unwrap();
+    let pedidos:&Vec<Pedido> = &pedidos.iter().map(|x| Pedido::new(
+        ObjectId::from_str(x["cliente_id"].as_str().unwrap_or("")).unwrap(),
+        ObjectId::from_str(x["produto_id"].as_str().unwrap_or("")).unwrap(),
+        x["quantidade"].as_str().unwrap_or("").parse::<f64>().unwrap(),
+        data["date"].as_str().unwrap_or("").to_string(),
+        Some(data["entrega"].as_str().unwrap_or("").to_string()),
+        false,
+    ).unwrap()).collect();
+    let tipo = data["tipo"].as_str().unwrap_or("").to_string();
+    match tipo.as_str() {
+        "semanal" => {
+
+            let pedido_semanal = PedidosSemanais::new(
+                data["date"].as_str().unwrap_or("").to_string(),
+                data["dias_recorrentes"].as_array().unwrap().iter().map(|x| x.as_i64().unwrap() as u8).collect(),
+                Some(pedidos.clone()),
+            );
+            
+            let pedido_semanal = pedido_semanal.create(Privilege::User).await;
+            if pedido_semanal.is_err() {
+                return Err(pedido_semanal.err().unwrap());
+            }
+            Ok("Pedido semanal realizado com sucesso".to_string())
+        }, 
+        "mensal" => {
+            let pedido_mensal = PedidosMensais::new(
+                data["date"].as_str().unwrap_or("").to_string(),
+                data["dias_recorrentes"].as_array().unwrap().iter().map(|x| x.as_i64().unwrap() as u8).collect(),
+                Some(pedidos.clone()),
+            );
+            let pedido_mensal = pedido_mensal.create(Privilege::User).await;
+            if pedido_mensal.is_err() {
+                return Err(pedido_mensal.err().unwrap());
+            }
+            Ok("Pedido mensal realizado com sucesso".to_string())
+        },
+        "intervalo" => {
+            let pedido_intervalo = PedidosPorIntervalo::new(
+                data["date"].as_str().unwrap_or("").to_string(),
+                data["dias_recorrentes"].as_array().unwrap().iter().map(|x| x.as_i64().unwrap() as u8).collect(),
+                Some(pedidos.clone()),
+            );
+            let pedido_intervalo = pedido_intervalo.create(Privilege::User).await;
+            if pedido_intervalo.is_err() {
+                return Err(pedido_intervalo.err().unwrap());
+            }
+            Ok("Pedido por intervalo realizado com sucesso".to_string())
+        },
+        "semanal_mensal" => {
+            let pedido_semanal_mensal = PedidosSemanaisMensais::new(
+                data["date"].as_str().unwrap_or("").to_string(),
+                data["dias_recorrentes"].as_array().unwrap().iter().map(|x| x.as_i64().unwrap() as u8).collect(),
+                Some(pedidos.clone()),
+            );
+            let pedido_semanal_mensal = pedido_semanal_mensal.create(Privilege::User).await;
+            if pedido_semanal_mensal.is_err() {
+                return Err(pedido_semanal_mensal.err().unwrap());
+            }
+            Ok("Pedido semanal mensal realizado com sucesso".to_string())
+        },
+        _ => {
+            return Err("Tipo de pedido inválido".to_string());
+        }
+
+    }
+
+    
+}
 fn main() {
-    let date = NaiveDate::parse_from_str("07/01/2024", "%d/%m/%Y").unwrap();
-    let date = naive_to_bson(date);
-    let date = dia_semana_mes(date).unwrap();
-    println!("{}", date);
+
     block_on(async {
         let result = create_a_admin_if_dont_exists().await;
         match result {
@@ -352,7 +452,10 @@ fn main() {
             find_fornecedor_name, 
             find_all_fornecedores, 
             movimentacao_entrada, 
-            movimentacao_saida
+            movimentacao_saida,
+            create_a_pedido,
+            create_a_pedido_recorrente
+      
           ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

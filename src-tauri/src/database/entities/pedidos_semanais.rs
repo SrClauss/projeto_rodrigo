@@ -13,7 +13,7 @@ use crate::utilities::weekday;
 
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-struct PedidosSemanais{
+pub struct PedidosSemanais{
     id: ObjectId,
     data: String,
     dias_recorrentes: Vec<u8>,

@@ -34,6 +34,7 @@ pub trait RecurrentOrderable: Crudable{
                     order.quantidade,
                     day.to_string(),    
                     Some(day.to_string()),
+                    false,
                 );
                 if new_pedido.is_err(){
                     return Err(new_pedido.err().unwrap());
@@ -87,8 +88,18 @@ pub trait RecurrentOrderable: Crudable{
         }
         Ok(result)
     }
-
-   
+    async fn moviment_all_pedidos(&self) -> Result<Vec<String>, String>{
+        let mut result: Vec<String> = Vec::new();
+        let pedidos = self.orders();
+        for pedido in pedidos{
+            let movimentacao = pedido.movimenta_estoque().await;
+            if movimentacao.is_err(){
+                return Err(movimentacao.err().unwrap());
+            }
+            result.push(movimentacao.unwrap());
+        }
+        Ok(result)
+    }
 
 
 }
