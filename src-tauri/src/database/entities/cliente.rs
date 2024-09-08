@@ -1,6 +1,5 @@
 use crate::database::traits::crudable::Crudable;
 use crate::database::entities::endereco::Endereco;
-use crate::utilities::validar_cpf_cnpj;
 use async_trait::async_trait;
 use mongodb::bson::oid::ObjectId;
 use mongodb::bson::doc;
@@ -29,9 +28,7 @@ impl Cliente {
         data_nascimento: String,
         enderecos: Vec<Endereco>,
     ) -> Result<Self, String> {
-        if validar_cpf_cnpj(&cpf_cnpj) {
-            return Err("CPF inválido".to_string());
-        }
+        
         Ok(Cliente {
             id: ObjectId::new(),
             nome,

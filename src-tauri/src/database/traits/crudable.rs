@@ -91,13 +91,20 @@ pub trait Crudable: Send + Sync + DeserializeOwned + Serialize + Clone + Debug {
             return Err("Insufficient privilege".to_string());
         }
         let collection: Collection<Self> = Self::collection().await;
-   
-        collection
-            .delete_one(doc! {"_id": self.id()})
+        let self_if = ObjectId::parse_str(self.id().as_str()).unwrap();
+        let filter = doc! {"_id": self_if};
+       
+        let result = collection
+            .delete_one(filter)
             .await
             .map_err(|e| e.to_string())?;
-        Ok(self)
+        match result.deleted_count {
+            1 => Ok(self),
+            _ => Err("Documento não encontrado".to_string()),
+        }
+        
     }
+        
     fn bson_crudable(&self) -> Result<Document, String> {
         let serialized = serde_json::to_value(self).map_err(|e| e.to_string())?;
         let bson_value = mongodb::bson::to_bson(&serialized).map_err(|e| e.to_string())?;

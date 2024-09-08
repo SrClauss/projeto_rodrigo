@@ -5,10 +5,20 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
-export default function CadastroEnderecos({ onSubmitEndereco, initialData = {} }) {
+export default function CadastroEnderecos({ onSubmitEndereco }) {
     const estados = ["", "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"];
 
-    const [data, setData] = useState(initialData);
+    const [data, setData] = useState({
+        nome_endereco: "",
+        cep: "",
+        logradouro: "",
+        bairro: "",
+        cidade: "",
+        estado: "",
+        numero: "",
+        complemento: "",
+        referencia: "",
+    });
 
     const handleCepKeyDown = (e) => {
         const controlKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];

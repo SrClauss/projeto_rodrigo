@@ -5,12 +5,15 @@ import { IconButton } from "@mui/material"
 import { Delete } from "@mui/icons-material"
 
 export default function AdressCard({ adresses, onAddAdress, onDeleteAdress }) {
+    useEffect(() => {
+        console.log(adresses)
+    }, [])
     return (
         <div className="adress-card">
             <div>
                 <Button onClick={onAddAdress}>Adicionar Endereço</Button>
             </div>
-            {
+           {
                 adresses.map((adress, index) => {
                     return (
                         <div className="adress" key={index}>

@@ -1,23 +1,21 @@
-import { AdminPanelSettingsSharp, Agriculture, ArrowBack, BackHandRounded, CalendarMonth, Category, ExitToAppSharp, Fastfood, InfoSharp, PersonAdd, PersonAddAlt, PersonAddAlt1TwoTone, ProductionQuantityLimits, ProductionQuantityLimitsSharp, SettingsSuggest, ShoppingBasket, Spa, Store, VerifiedUserSharp } from "@mui/icons-material";
+import { Agriculture, ArrowBack, Category, PersonAddAlt, PersonAddAlt1TwoTone, Spa} from "@mui/icons-material";
 import "../MainScreen/MainScreen.css";
 import Modal from "../../modals/Modal";
 import { useEffect, useState } from "react";
-import CadastroCliente from "../../modals/CadastroCliente";
 import { NavigationContext } from "../../NavigationContext";
 import React from "react";
 import CadastroCategoria from "../../modals/CadastroCategoria";
+import CadastroCliente from "../../modals/CadastroCliente";
 import CadastroProdutos from "../../modals/CadastroProdutos";
-import AutoCompleteCliente from "../../components/AutoCompletePessoa/AutoCompleteCliente";
+import CadastroFornecedor from "../../modals/CadastroFornecedor";
 
 export default function AdminScreen({ privilege }) {
 
     const { setActiveScreen } = React.useContext(NavigationContext);
     const [showModal, setShowModal] = useState(false);
     const [componentModal, setComponentModal] = useState(null);
-    const [tabOrders , setTabOrders] = useState([1,2,3,4]);
-    useEffect(() => {
-        console.log(tabOrders)
-    }, [tabOrders])
+    const [tabOrders , setTabOrders] = useState([1,2,3,4,5,6]);
+
     const handleModal = () => {
         setShowModal(true);
         setComponentModal(componentModal);
@@ -43,8 +41,10 @@ export default function AdminScreen({ privilege }) {
                             tabIndex={tabOrders[0]}
                             onClick={() => {
                                 handleModal();
-                                setComponentModal(<CadastroCategoria />);
+                                setComponentModal(<CadastroCategoria onSetTabOrders={setTabOrders} />);
+                                setTabOrders([-1,-1,-1,-1,-1,-1]);
                             }}
+                            
 
                         >
                             <div><Category /></div>
@@ -52,6 +52,7 @@ export default function AdminScreen({ privilege }) {
                         </button>
                         <button
                             tabIndex={tabOrders[1]}
+                          
                             
                             
                         >
@@ -61,9 +62,11 @@ export default function AdminScreen({ privilege }) {
                         </button>
 
                         <button
+                            tabIndex={tabOrders[2]}
                             onClick={() => {
                                 handleModal();
-                                setComponentModal(<CadastroCliente />);
+                                setComponentModal(<CadastroCliente onSetTabOrders={setTabOrders} />);
+                                setTabOrders([-1,-1,-1,-1,-1,-1]);
                             }}
 
                         >
@@ -71,26 +74,29 @@ export default function AdminScreen({ privilege }) {
                             <div className="label-button">Cadastrar Cliente</div>
                         </button>
                         <button
+
+                            tabIndex={tabOrders[3]}
                             onClick={() => {
                                 handleModal();
-                                setComponentModal(<CadastroFornecedor />);
+                                setComponentModal(<CadastroFornecedor onSetTabOrders={setTabOrders} />);
+                                setTabOrders([-1,-1,-1,-1,-1,-1]);
                             }}>
                             <div><Agriculture /></div>
                             <div className="label-button">Cadastrar Fornecedor</div>
                         </button>
                         <button
-                            tabIndex={tabOrders[2]}
+                            tabIndex={tabOrders[4]}
                             onClick={() => {
                                 handleModal();
                                 setComponentModal(<CadastroProdutos onSetTabOrders={setTabOrders} />);
-                                setTabOrders([-1,-1,-1,-1]);
+                                setTabOrders([-1,-1,-1,-1,-1,-1]);
                             }}
                         >
                             <div><Spa /></div>
                             <div className="label-button">Cadastrar Produtos</div>
                         </button>
                         <button
-                        tabIndex={tabOrders[3]}
+                        tabIndex={tabOrders[5]}
                         onClick={handleMainScreen}>
                             <div><ArrowBack /></div>
                             <div className="label-button">Voltar</div>

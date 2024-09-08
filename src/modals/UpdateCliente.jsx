@@ -1,15 +1,27 @@
 import { TextField, Button, Card } from "@mui/material"
 import "./Modal.css"
 import AdressCard from "../components/AdressCard/AdressCard"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import CadastroEnderecos from "./CadastroEnderecos"
 import { invoke } from "@tauri-apps/api"
 import { maskTelefone, maskCpfCnpj } from "../frontend/utils"
 
-export default function CadastroCliente({ onSetComponentModal, onSetTabOrders }) {
+export default function UpdateCliente({ onSetComponentModal, onSetTabOrders, initialData, onCleanPesquisa }) {
     const [data, setData] = useState({
-        nome: '', email: '', telefone: '', cpf_cnpj: '', data_nascimento: '', enderecos: []
+
+        id: initialData._id.$oid,
+        nome: initialData.nome, 
+        email: initialData.email,
+        telefone: initialData.telefone,
+        cpf_cnpj: initialData.cpf_cnpj,
+        data_nascimento: initialData.data_nascimento,
+        enderecos: initialData.enderecos
     })
+
+
+    useEffect(() => {
+        console.log(initialData)
+    }, [])
 
 
 
@@ -18,15 +30,15 @@ export default function CadastroCliente({ onSetComponentModal, onSetTabOrders })
 
 
     const handleSaveData = (data) => {
-        invoke("create_a_cliente", { data: data }).then((res) => {
+        invoke("update_cliente", { data: data }).then((res) => {
             console.log(res)
 
         }).catch((err) => {
             console.log(err)
         })
         onSetTabOrders([1, 2, 3, 4, 5, 6]);
-        setData({ nome: '', email: '', telefone: '', cpf_cnpj: '', data_nascimento: '', enderecos: [] })
-        
+        onSetComponentModal(null)
+        onCleanPesquisa()
 
 
     }
@@ -194,7 +206,7 @@ export default function CadastroCliente({ onSetComponentModal, onSetTabOrders })
 
 
                             <Button onClick={(_) => handleSaveData(data)} fullWidth variant="contained">Salvar</Button>
-                            <Button onClick={(_) => onSetComponentModal(null)} fullWidth variant="contained" color="error">Sair</Button>
+                        
 
 
                         </div>

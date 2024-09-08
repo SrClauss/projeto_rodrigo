@@ -4,8 +4,11 @@ import Button from '@mui/material/Button';
 import "./Modal.css";
 import { invoke } from '@tauri-apps/api';
 
-export default function CadastroCategoria({ onSetComponentModal, initialData = {} }) {
-    const [data, setData] = useState(initialData);
+export default function CadastroCategoria({ onSetComponentModal, onSetTabOrders }) {
+    const [data, setData] = useState({
+        nome: '',
+        descricao: ''
+    });
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -17,13 +20,13 @@ export default function CadastroCategoria({ onSetComponentModal, initialData = {
         }).catch((err) => {
             console.log(err)
         })
+        setData({ nome: '', descricao: '' });
         
 
-        onSetComponentModal(false);
     };
 
     return (
-        <form className="form-cad" onSubmit={handleSubmit}>
+        <form className="form-cad">
             <div className="title">Cadastro de Categorias</div>
             <div className="two-columns">
                 <TextField
@@ -41,9 +44,25 @@ export default function CadastroCategoria({ onSetComponentModal, initialData = {
                     onChange={(e) => setData({ ...data, descricao: e.target.value })}
                 />
             </div>
-            <Button fullWidth type="submit" variant="contained" color="primary">
+            <Button fullWidth onClick={handleSubmit} variant="contained" color="primary">
                 Enviar
             </Button>
+            <Button
+                    fullWidth
+                    variant="contained"
+                    tabIndex={-1}
+                    onClick={() =>{
+                        onSetTabOrders([1,2,3,4]);
+                        onSetComponentModal(false);
+                    }}
+                    color='error'
+
+
+                >
+                    Sair
+
+                </Button>
+
         </form>
     );
 }

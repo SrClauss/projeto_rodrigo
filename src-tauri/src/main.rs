@@ -117,6 +117,74 @@ async fn create_a_cliente(data: Value) -> Result<Cliente, String> {
     Ok(cliente.unwrap())
 }
 #[tauri::command]
+async fn delete_cliente(cliente_id: &str) -> Result<String, String> {
+    let cliente = Cliente::read(cliente_id).await?;
+    let cliente = cliente.delete(Privilege::Admin).await;
+    match cliente {
+        Ok(_) => Ok(format!("Cliente {:?} deletado com sucesso", cliente.unwrap().nome)),
+        Err(e) => Err(e),
+        
+    }
+
+
+
+}
+#[tauri::command]
+async fn update_cliente(data: Value) -> Result<String, String>{
+    println!("{:?}", data);
+    let cliente = Cliente::read(data["id"].as_str().unwrap_or("")).await;
+    if cliente.is_err() {
+        return Err(cliente.err().unwrap());
+    }
+    let mut cliente = cliente.unwrap();
+    cliente.nome = data["nome"].as_str().unwrap_or("").to_string();
+    cliente.email = data["email"].as_str().unwrap_or("").to_string();
+    cliente.telefone = data["telefone"].as_str().unwrap_or("").to_string();
+    cliente.cpf_cnpj = data["cpf_cnpj"].as_str().unwrap_or("").to_string();
+    cliente.data_nascimento = data["data_nascimento"].as_str().unwrap_or("").to_string();
+    let enderecos_values = data.get("enderecos");
+    if enderecos_values.is_none() {
+        return Err("Endereços não informados".to_string());
+    }
+    let enderecos_values = enderecos_values.unwrap().as_array().unwrap();
+    let mut enderecos: Vec<Endereco> = Vec::new();
+    for endereco_value in enderecos_values {
+        let endereco = Endereco::new(
+            endereco_value["nome_endereco"]
+                .as_str()
+                .unwrap_or("")
+                .to_string(),
+            endereco_value["logradouro"]
+                .as_str()
+                .unwrap_or("")
+                .to_string(),
+            endereco_value["numero"].as_i64().unwrap_or(0) as i32,
+            endereco_value["bairro"].as_str().unwrap_or("").to_string(),
+            endereco_value["cidade"].as_str().unwrap_or("").to_string(),
+            endereco_value["estado"].as_str().unwrap_or("").to_string(),
+            endereco_value["cep"].as_str().unwrap_or("").to_string(),
+            endereco_value["complemento"]
+                .as_str()
+                .unwrap_or("")
+                .to_string(),
+            endereco_value["referencia"]
+                .as_str()
+                .unwrap_or("")
+                .to_string(),
+        );
+        if endereco.is_err() {
+            return Err(endereco.err().unwrap());
+        }
+        enderecos.push(endereco.unwrap());
+    }
+    cliente.enderecos = enderecos;
+    let cliente = cliente.update(Privilege::Admin).await;
+    if cliente.is_err() {
+        return Err(cliente.err().unwrap());
+    }
+    Ok("Cliente atualizado com sucesso".to_string())
+}
+#[tauri::command]
 async fn login(data: Value) -> Result<String, String> {
 
 
@@ -444,6 +512,7 @@ fn main() {
             create_a_fornecedor,
             create_a_categoria,
             create_a_produto,
+            update_cliente,
             login,
             find_cliente_by_substring_name,
             find_fornecedor_by_substring_name,
@@ -454,8 +523,8 @@ fn main() {
             movimentacao_entrada, 
             movimentacao_saida,
             create_a_pedido,
-            create_a_pedido_recorrente
-      
+            create_a_pedido_recorrente, 
+            delete_cliente
           ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

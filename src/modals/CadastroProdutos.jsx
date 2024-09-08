@@ -4,15 +4,9 @@ import { Box } from '@mui/system';
 import { dialog, invoke } from '@tauri-apps/api';
 
 
-export default function CadastroProdutos({ onSetComponentModal, initialData = {}, onSetTabOrders }) {
+export default function CadastroProdutos({ onSetComponentModal, onSetTabOrders }) {
     const nomeRef = React.useRef(null)
-    const [data, setData] = useState({
-        nome: initialData?.nome || '',
-        categoria: initialData?.categoria || { label: 'Selecione uma categoria', value: null },
-        preco_compra: initialData?.preco_compra || '',
-        preco_venda: initialData?.preco_venda || '',
-        unidade: initialData?.unidade || '',
-    })
+    const [data, setData] = useState()
     const [snackbar, setSnackbar] = useState({ open: false, message: '', type: 'info' })
 
     const [categorias, setCategorias] = useState([])
