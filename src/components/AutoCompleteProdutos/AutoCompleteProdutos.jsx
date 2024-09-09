@@ -40,6 +40,9 @@ export default function AutoCompleteProdutos ({ onSetData }) {
                 options={opcoes}
                 onChange={(event, value) => {
       
+                    if (!value) {
+                        return;
+                    }
                     onSetData(value);
 
 

@@ -18,6 +18,7 @@ pub enum Periodicidade{
 pub trait RecurrentOrderable: Crudable{
 
 
+    
     fn periodicidade(&self) -> Periodicidade;
     fn dias_recorrentes(&self) -> Vec<u8>;
     fn orders(&self) -> Vec<Pedido>;

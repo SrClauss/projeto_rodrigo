@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Button, FormControlLabel, TextField, Checkbox } from '@mui/material';
 import { generateUUID } from '../../frontend/utils';
 import PedidosRecorrentes from '../PedidosRecorrentes/PedidosRecorrentes';
+import { invoke } from '@tauri-apps/api';
 
 
 export default function PanelPedidosClientes({ cliente }) {
@@ -12,6 +13,11 @@ export default function PanelPedidosClientes({ cliente }) {
     const [pedidos, setPedidos] = useState([]);
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [showPedidosRecorrentes, setShowPedidosRecorrentes] = useState(false);
+
+    useEffect(() => {
+        console.log(pedidos);
+    }, [pedidos]);
+ 
 
     const handleAddPedido = () => {
         const pedido = {
@@ -21,7 +27,7 @@ export default function PanelPedidosClientes({ cliente }) {
             produto_id: '',
             quantidade: 0,
             entrega: '',
-            recorrente: showPedidosRecorrentes
+     
         }
         setPedidos([...pedidos, pedido]);
     };
@@ -33,6 +39,7 @@ export default function PanelPedidosClientes({ cliente }) {
     }, [pedidos]);
 
     const handleSetMovimentacaoData = (pedido) => {
+
         setPedidos(pedidos.map((p) => {
             if (p.key === pedido.provisoryId) {
                 return {
@@ -40,6 +47,7 @@ export default function PanelPedidosClientes({ cliente }) {
                     produto_id: pedido.produto.id,
                     quantidade: pedido.quantidade,
                     entrega: pedido.entrega
+
                 }
             }
             return p;
@@ -50,23 +58,61 @@ export default function PanelPedidosClientes({ cliente }) {
 
 
     const savePedidoComum = (pedido) => {
-        /*
-         pub id: ObjectId,
-    pub cliente_id: ObjectId,
-    pub produto: ObjectId,
-    pub quantidade: f64,
-    pub data: String,
-    pub entrega: Option<String>,
-         */
-        console.log(pedido);
         const adaptedData = {
             cliente_id: pedido.cliente._id.$oid,
             produto: pedido.produto_id,
             quantidade: pedido.quantidade,
-            data : new Date(pedido.data).toISOString(),
+            data: new Date(pedido.data).toISOString(),
             entrega: new Date(pedido.entrega).toISOString()
         }
         console.log(adaptedData);
+    }
+    const savePedidoRecorrente = () => {
+      
+        const data_pedido = pedidos[0].data;
+        const cliente_id = pedidos[0].cliente._id.$oid;
+        const tipo_recorrencia = pedidos[0].recorrencia.value;
+        let recorrencia = ''
+        switch (tipo_recorrencia) {
+            case 'semanal': 
+            recorrencia = pedidos[0].recorrencia.weekDay
+                break;
+            case 'mensal': 
+            recorrencia = pedidos[0].recorrencia.monthDay
+                break;
+            case
+                'porIntervalo': 
+                recorrencia = pedidos[0].recorrencia.interval
+                break;
+            case 'semanalMensal': 
+            recorrencia = pedidos[0].recorrencia.weekMonth
+                break;
+            default:
+                break;
+        }
+        let pedidosArray = []
+        pedidos.forEach((pedido) => {
+
+            pedidosArray.push({
+                cliente_id: cliente_id,
+                produto: pedido.produto_id,
+                quantidade: pedido.quantidade,
+                data: data_pedido,
+                entrega: pedido.entrega,
+                executado: false
+
+            })})
+        
+        const adaptedData = {
+
+            cliente_id: cliente_id,
+            tipo_recorrencia: tipo_recorrencia,
+            recorrencia: recorrencia,
+            pedidos: pedidosArray
+       
+        }
+        console.log(adaptedData);
+        
     }
     return (
         <div className='root-panel'>
@@ -126,7 +172,7 @@ export default function PanelPedidosClientes({ cliente }) {
                             }
                         } />
                     }
-                    <Button variant='contained' fullWidth onClick={() => savePedidoComum(pedidos[0])}>Salvar</Button>
+                    <Button variant='contained' fullWidth onClick={() =>savePedidoRecorrente()}>Salvar</Button>
                 </div>
 
 

@@ -19,7 +19,11 @@ export default function ProductSearch({ onSubmitSearch, categorias, trigger}) {
     }, [trigger])
     
     const handleSearch = (search) => {
-
+        if (search === "") {
+            setResultsVisible(false)
+            setResults([])
+            return
+        }
         invoke("find_produto_by_substring_name", { nameSubstring: search }).then((response) => {
 
             setResults(response)

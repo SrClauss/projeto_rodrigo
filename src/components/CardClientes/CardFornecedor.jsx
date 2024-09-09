@@ -1,10 +1,13 @@
 import { Divider, IconButton, Tooltip } from "@mui/material";
 import "./CardClientes.css";
 import { AddBusiness, DeleteForeverRounded, Edit, Person2Outlined, Person2Rounded, Shop, Shop2 } from "@mui/icons-material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 export default function CardFornecedor({ pessoa, onDeleteFornecedor, onEditFornecedor}) {
+    useEffect(() => {
+        console.log(pessoa)
+    }, [])
     return (
 
         <div className="root-card-cliente">

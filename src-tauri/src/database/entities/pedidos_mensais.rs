@@ -13,10 +13,10 @@ use crate::utilities::dia_mes;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PedidosMensais{
-    id: ObjectId,
-    data: String,
-    dias_recorrentes: Vec<u8>,
-    pedidos: Option<Vec<Pedido>>,
+    pub id: ObjectId,
+    pub data: String,
+    pub dias_recorrentes: Vec<u8>,
+    pub pedidos: Option<Vec<Pedido>>,
 
     
 }

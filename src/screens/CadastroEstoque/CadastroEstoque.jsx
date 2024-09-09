@@ -183,7 +183,9 @@ export default function CadastroEstoque({ mode }) {
                         key={index}
                         item={item}
                         onDelete={handleDelete}
-                        estoque={itens[index].estoque_demanda + quantidades[index]}
+                        estoque={mode==="saida"?itens[index].estoque_demanda - quantidades[index]:
+                        itens[index].estoque_demanda + quantidades[index]
+                        }
                         onSetData={
                             (data) => {
                                 const newItens = [...itens]

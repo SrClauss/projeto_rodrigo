@@ -7,7 +7,8 @@ import {
     MenuItem,
     Radio,
     RadioGroup,
-    Select
+    Select,
+    Button
 } from '@mui/material';
 import { useState } from 'react';
 import './PedidosRecorrentes.css';
@@ -17,7 +18,7 @@ import MultiSelectDiasSemanaMes from './MultiSelectDiasSemanaMes/MultiSelectDias
 
 export default function PedidosRecorrentes({onSubmitData}) {
     const [value, setValue] = useState('');
-    const [weekDay, setWeekDay] = useState('');
+    const [weekDay, setWeekDay] = useState([]);
     const [monthDay, setMonthDay] = useState('');
     const [interval, setInterval] = useState('');
     const [weekMonth, setWeekMonth] = useState('');
@@ -59,11 +60,27 @@ export default function PedidosRecorrentes({onSubmitData}) {
                 {
                     value == 'semanal' &&
                     <FormControl fullWidth>
-                        <InputLabel>Dia da Semana</InputLabel>
+                    <div className='two-columns'>
+                    <InputLabel>Dia da Semana</InputLabel>
+                
                         <Select
+                            fullWidth
                             label="Dia da Semana"
                             value={weekDay}
                             onChange={(e) => setWeekDay(e.target.value)}
+                            multiple
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        '& .Mui-selected': {
+                                            backgroundColor: '#d1ffd0', // Cor de fundo para itens selecionados
+                                        },
+                                        '& .Mui-selected:hover': {
+                                            backgroundColor: '#d1ffd0', // Cor de fundo para itens selecionados ao passar o mouse
+                                        },
+                                    },
+                                },
+                            }}
 
                         >
 
@@ -75,6 +92,8 @@ export default function PedidosRecorrentes({onSubmitData}) {
                             <MenuItem value={6}>Sexta</MenuItem>
                             <MenuItem value={7}>Sábado</MenuItem>
                         </Select>
+                        <Button variant='text' onClick={() => setWeekDay([])}>Limpar</Button>
+                        </div>
                     </FormControl>
                 }
                 {
@@ -85,8 +104,8 @@ export default function PedidosRecorrentes({onSubmitData}) {
                     value == 'porIntervalo' &&
 
                     <FormControl fullWidth>
-                        <InputLabel>Intervalo de Dias</InputLabel>
-                        <TextField label="Intervalo de Dias" type="number" value={interval} onChange={(e)=>{setInterval(e.target.value)}} />
+                       
+                        <TextField label="Intervalo de dias" type="number" value={interval} onChange={(e)=>{setInterval([e.target.value])}} />
                     </FormControl>
                 }
 

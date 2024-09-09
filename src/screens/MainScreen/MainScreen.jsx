@@ -11,6 +11,8 @@ import { invoke } from "@tauri-apps/api";
 import { appWindow } from "@tauri-apps/api/window";
 import Modal from "../../modals/Modal";
 import UpdateCliente from "../../modals/UpdateCliente";
+import UpdateFornecedor from "../../modals/UpdateFornecedor";
+import CardUpdatePrecos from "../../components/CardUpdatePrecos/CardUptatePrecos";
 export default function MainScreen({ privilege }) {
 
     const { setActiveScreen } = React.useContext(NavigationContext);
@@ -54,7 +56,7 @@ export default function MainScreen({ privilege }) {
 
         if (criterio === "Fornecedor") {
             invoke("find_fornecedor_by_substring_name", { nameSubstring: key }).then((response) => {
-
+                console.log(response)
                 setPessoas(response)
                 setTipoPessoa("Fornecedor")
             }).catch((error) => {
@@ -78,10 +80,16 @@ export default function MainScreen({ privilege }) {
         })
         setPessoas([])
     }
-    const handleEditCliente = (pessoa) => {
-
-
+    const handleDeleteFornecedor = (id) => {
+        invoke("delete_fornecedor", { fornecedorId: id }).then((response) => {
+            console.log(response)
+            setPessoas([])
+        }).catch((error) => {
+            console.log(error)
+        })
+        setPessoas([])
     }
+
     return (
 
 
@@ -178,10 +186,12 @@ export default function MainScreen({ privilege }) {
                                         return <CardFornecedor
                                             key={index}
                                             pessoa={pessoa}
-
-                                            onCreatePedido={handleCreatePedido}
-
-                                            onDeleteCliente={handleDeleteCliente}
+                                            onDeleteFornecedor={handleDeleteFornecedor}
+                                            onEditFornecedor={(fornecedor)=>{
+                                                setComponentModal(<UpdateFornecedor  initialData={fornecedor} onSetTabOrders={setTabOrder} onCleanPesquisa={setPessoas([])}/>)
+                                                setShowModal(true)
+                                                setTabOrder([-1, -1, -1])
+                                            }}
 
                                            
                                             />
@@ -192,9 +202,14 @@ export default function MainScreen({ privilege }) {
 
                             </div>
 
+                            
 
+                                  
                         </div>
+                    
                     </div>
+
+
 
                 </div>
 

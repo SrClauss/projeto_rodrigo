@@ -119,12 +119,20 @@ async fn create_a_cliente(data: Value) -> Result<Cliente, String> {
 #[tauri::command]
 async fn delete_cliente(cliente_id: &str) -> Result<String, String> {
     let cliente = Cliente::read(cliente_id).await?;
+    let cliente_cascade_delete = cliente.cascade_delete().await;
+    if cliente_cascade_delete.is_err() {
+        return Err(cliente_cascade_delete.err().unwrap() + " - Cliente não deletado");
+    }
+    let cliente = Cliente::read(cliente_id).await?;
     let cliente = cliente.delete(Privilege::Admin).await;
+
     match cliente {
         Ok(_) => Ok(format!("Cliente {:?} deletado com sucesso", cliente.unwrap().nome)),
         Err(e) => Err(e),
         
     }
+
+
 
 
 
@@ -271,6 +279,70 @@ async fn create_a_fornecedor(data: Value) -> Result<String, String> {
     
 }
 #[tauri::command]
+async fn update_fornecedor(data: Value) -> Result<String, String> {
+    let fornecedor = Fornecedor::read(data["id"].as_str().unwrap_or("")).await;
+    if fornecedor.is_err() {
+        return Err(fornecedor.err().unwrap());
+    }
+    let mut fornecedor = fornecedor.unwrap();
+    fornecedor.nome = data["nome"].as_str().unwrap_or("").to_string();
+    fornecedor.cpf_cnpj = data["cpf_cnpj"].as_str().unwrap_or("").to_string();
+    fornecedor.telefone = data["telefone"].as_str().unwrap_or("").to_string();
+    fornecedor.email = data["email"].as_str().unwrap_or("").to_string();
+    fornecedor.data_criacao = data["data_criacao"].as_str().unwrap_or("").to_string();
+    let enderecos_values = data.get("enderecos");
+    if enderecos_values.is_none() {
+        return Err("Endereços não informados".to_string());
+    }
+    let enderecos_values = enderecos_values.unwrap().as_array().unwrap();
+    let mut enderecos: Vec<Endereco> = Vec::new();
+    for endereco_value in enderecos_values {
+        let endereco = Endereco::new(
+            endereco_value["nome_endereco"]
+                .as_str()
+                .unwrap_or("")
+                .to_string(),
+            endereco_value["logradouro"]
+                .as_str()
+                .unwrap_or("")
+                .to_string(),
+            endereco_value["numero"].as_i64().unwrap_or(0) as i32,
+            endereco_value["bairro"].as_str().unwrap_or("").to_string(),
+            endereco_value["cidade"].as_str().unwrap_or("").to_string(),
+            endereco_value["estado"].as_str().unwrap_or("").to_string(),
+            endereco_value["cep"].as_str().unwrap_or("").to_string(),
+            endereco_value["complemento"]
+                .as_str()
+                .unwrap_or("")
+                .to_string(),
+            endereco_value["referencia"]
+                .as_str()
+                .unwrap_or("")
+                .to_string(),
+        );
+        if endereco.is_err() {
+            return Err(endereco.err().unwrap());
+        }
+        enderecos.push(endereco.unwrap());
+    }
+    fornecedor.enderecos = enderecos;
+    let fornecedor = fornecedor.update(Privilege::Admin).await;
+    if fornecedor.is_err() {
+        return Err(fornecedor.err().unwrap());
+    }
+    Ok("Fornecedor atualizado com sucesso".to_string())
+}
+#[tauri::command]
+async fn delete_fornecedor(fornecedor_id: &str) -> Result<String, String> {
+    let fornecedor = Fornecedor::read(fornecedor_id).await?;
+    let fornecedor = fornecedor.delete(Privilege::Admin).await;
+    match fornecedor {
+        Ok(_) => Ok(format!("Fornecedor {:?} deletado com sucesso", fornecedor.unwrap().nome)),
+        Err(e) => Err(e),
+        
+    }
+}
+#[tauri::command]
 async fn create_a_categoria(data: Value) -> Result<String, String>{
 
     let category = Categoria::new(
@@ -322,6 +394,7 @@ async fn find_fornecedor_by_substring_name(name_substring: String) -> Result<Vec
     if fornecedores.is_err() {
         return Err(fornecedores.err().unwrap());
     }
+
     Ok(fornecedores.unwrap())
 }
 #[tauri::command]
@@ -421,80 +494,71 @@ async fn create_a_pedido(data: Value) -> Result<String, String> {
     Ok("Pedido realizado com sucesso".to_string())
 }
 #[tauri::command]
-async fn create_a_pedido_recorrente(data: Value) -> Result<String, String>{
-    
-    let pedidos = data.get("pedidos");
-    if pedidos.is_none(){
-        return Err("Pedidos não informados".to_string());
-    }
-    let pedidos = pedidos.unwrap().as_array().unwrap();
-    let pedidos:&Vec<Pedido> = &pedidos.iter().map(|x| Pedido::new(
-        ObjectId::from_str(x["cliente_id"].as_str().unwrap_or("")).unwrap(),
-        ObjectId::from_str(x["produto_id"].as_str().unwrap_or("")).unwrap(),
-        x["quantidade"].as_str().unwrap_or("").parse::<f64>().unwrap(),
-        data["date"].as_str().unwrap_or("").to_string(),
-        Some(data["entrega"].as_str().unwrap_or("").to_string()),
-        false,
-    ).unwrap()).collect();
-    let tipo = data["tipo"].as_str().unwrap_or("").to_string();
-    match tipo.as_str() {
-        "semanal" => {
+async fn save_pedido_recorrente(data: Value) -> Result<String, String> {
 
-            let pedido_semanal = PedidosSemanais::new(
-                data["date"].as_str().unwrap_or("").to_string(),
-                data["dias_recorrentes"].as_array().unwrap().iter().map(|x| x.as_i64().unwrap() as u8).collect(),
-                Some(pedidos.clone()),
-            );
-            
-            let pedido_semanal = pedido_semanal.create(Privilege::User).await;
-            if pedido_semanal.is_err() {
-                return Err(pedido_semanal.err().unwrap());
-            }
-            Ok("Pedido semanal realizado com sucesso".to_string())
-        }, 
-        "mensal" => {
-            let pedido_mensal = PedidosMensais::new(
-                data["date"].as_str().unwrap_or("").to_string(),
-                data["dias_recorrentes"].as_array().unwrap().iter().map(|x| x.as_i64().unwrap() as u8).collect(),
-                Some(pedidos.clone()),
-            );
-            let pedido_mensal = pedido_mensal.create(Privilege::User).await;
-            if pedido_mensal.is_err() {
-                return Err(pedido_mensal.err().unwrap());
-            }
-            Ok("Pedido mensal realizado com sucesso".to_string())
+    let pedidos = data["pedidos"].as_array().unwrap();
+    let cliente_id = data["cliente_id"].as_str().unwrap_or("");
+    let tipo_recorrencia = data["tipo_recorrencia"].as_str().unwrap_or("");
+    let recorrencia = data["recorrencia"].as_array().unwrap();
+
+
+    let pedidos = pedidos.iter().map(|pedido| {
+        Pedido::new(
+            ObjectId::from_str(cliente_id).unwrap(),
+            ObjectId::from_str(pedido["produto"].as_str().unwrap_or("")).unwrap(),
+            pedido["quantidade"].as_str().unwrap_or("").parse::<f64>().unwrap(),
+            pedido["data"].as_str().unwrap_or("").to_string(),
+            Some(pedido["entrega"].as_str().unwrap_or("").to_string()),
+            false,
+        )
+    }).collect::<Vec<Result<Pedido, String>>>();
+    
+
+ /*
+ {{
+    "cliente_id": "66de488e0a1725c901e816d4",
+    "tipo_recorrencia": "semanal",
+    "recorrencia": [
+        2
+    ],
+    "pedidos": [
+        {
+            "cliente_id": "66de488e0a1725c901e816d4",
+            "produto": "66dc5da4b7a26c425307a862",
+            "quantidade": 20,
+            "data": "2024-09-09",
+            "entrega": "2024-09-09",
+            "executado": false
         },
-        "intervalo" => {
-            let pedido_intervalo = PedidosPorIntervalo::new(
-                data["date"].as_str().unwrap_or("").to_string(),
-                data["dias_recorrentes"].as_array().unwrap().iter().map(|x| x.as_i64().unwrap() as u8).collect(),
-                Some(pedidos.clone()),
-            );
-            let pedido_intervalo = pedido_intervalo.create(Privilege::User).await;
-            if pedido_intervalo.is_err() {
-                return Err(pedido_intervalo.err().unwrap());
-            }
-            Ok("Pedido por intervalo realizado com sucesso".to_string())
-        },
-        "semanal_mensal" => {
-            let pedido_semanal_mensal = PedidosSemanaisMensais::new(
-                data["date"].as_str().unwrap_or("").to_string(),
-                data["dias_recorrentes"].as_array().unwrap().iter().map(|x| x.as_i64().unwrap() as u8).collect(),
-                Some(pedidos.clone()),
-            );
-            let pedido_semanal_mensal = pedido_semanal_mensal.create(Privilege::User).await;
-            if pedido_semanal_mensal.is_err() {
-                return Err(pedido_semanal_mensal.err().unwrap());
-            }
-            Ok("Pedido semanal mensal realizado com sucesso".to_string())
-        },
-        _ => {
-            return Err("Tipo de pedido inválido".to_string());
+        {
+            "cliente_id": "66de488e0a1725c901e816d4",
+            "produto": "66dc5dbdb7a26c425307a864",
+            "quantidade": 30,
+            "data": "2024-09-09",
+            "entrega": "2024-09-09",
+            "executado": false
         }
+    ]
+}
+  */  
 
+  Ok("".to_string())
+
+}
+#[tauri::command]
+async fn update_preco_produto(data: Value) -> Result<String, String> {
+    let produto = Produto::read(data["produto_id"].as_str().unwrap_or("")).await;
+    if produto.is_err() {
+        return Err(produto.err().unwrap());
     }
-
-    
+    let mut produto = produto.unwrap();
+    produto.preco_compra = data["preco_compra"].as_str().unwrap_or("").parse::<f64>().unwrap();
+    produto.preco_venda = data["preco_venda"].as_str().unwrap_or("").parse::<f64>().unwrap();
+    let produto = produto.update(Privilege::Admin).await;
+    if produto.is_err() {
+        return Err(produto.err().unwrap());
+    }
+    Ok("Preço do produto atualizado com sucesso".to_string())
 }
 fn main() {
 
@@ -512,19 +576,22 @@ fn main() {
             create_a_fornecedor,
             create_a_categoria,
             create_a_produto,
-            update_cliente,
-            login,
-            find_cliente_by_substring_name,
-            find_fornecedor_by_substring_name,
-            get_categorias,
-            find_produto_by_substring_name,
-            find_fornecedor_name, 
+            create_a_pedido, 
+            delete_cliente,
+            delete_fornecedor,
             find_all_fornecedores, 
+            find_cliente_by_substring_name,
+            find_fornecedor_name, 
+            find_fornecedor_by_substring_name,
+            find_produto_by_substring_name,
+            get_categorias,
+            login,
             movimentacao_entrada, 
             movimentacao_saida,
-            create_a_pedido,
-            create_a_pedido_recorrente, 
-            delete_cliente
+            update_cliente,
+            update_fornecedor,
+            update_preco_produto,
+            save_pedido_recorrente
           ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -14,9 +14,9 @@ use mongodb::bson::DateTime;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PedidosSemanaisMensais{
-    id: ObjectId,
-    data: String,
-    dias_recorrentes: Vec<u8>,
+    pub id: ObjectId,
+    pub data: String,
+    pub dias_recorrentes: Vec<u8>,
     /*
       os valores por dias concorrentes seguem o seguinte esquema
       uma dezena que representa qual a posição daquele dia da semana no mes
@@ -29,7 +29,7 @@ pub struct PedidosSemanaisMensais{
         43 - quarta terça do mes
         33 - terceira terça do mes
      */
-    pedidos: Option<Vec<Pedido>>,
+    pub pedidos: Option<Vec<Pedido>>,
     
 }
 

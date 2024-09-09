@@ -9,6 +9,7 @@ import CadastroCliente from "../../modals/CadastroCliente";
 import CadastroProdutos from "../../modals/CadastroProdutos";
 import CadastroFornecedor from "../../modals/CadastroFornecedor";
 
+
 export default function AdminScreen({ privilege }) {
 
     const { setActiveScreen } = React.useContext(NavigationContext);
@@ -105,13 +106,14 @@ export default function AdminScreen({ privilege }) {
 
                     </div>
               <Modal show={showModal} onClose={() => setShowModal(false)} component={componentModal} />
-                   
 
 
                 </div>
 
 
             </div>
+
+       
         </>
     )
 }

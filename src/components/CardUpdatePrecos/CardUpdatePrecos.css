@@ -1,0 +1,42 @@
+.card-container{
+    width: 100%;
+    border : 2px inset var(--cor-primaria);
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+
+    
+}
+.id{
+
+    font-size: 10px;
+    color: var(--cor-terciaria)
+}
+
+.flex-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    
+}
+
+.nome-produto{
+    font-size: 20px;
+    width: 50%;
+    color: var(--cor-terciaria);
+    font-weight: bold;
+    padding: 0 0 0 10px;
+}
+
+.controles{
+    display: flex;
+
+   
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    padding: 5px;
+}
